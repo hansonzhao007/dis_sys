@@ -61,9 +61,14 @@ void lc_broadcast_msg(struct lc_msg msg) {
   int sockfd = 0, n = 0;
   char sendBuff[64];
   struct sockaddr_in serv_addr;
-
+  memset(sendBuff, 0,sizeof(sendBuff));
+  encode_msg(sendBuff,msg);
+  if(msg.msg_type_ == MSG){
+    // lamport's clock rule, before sending a message, logic clock plus 1
+    lc_logic_clock++;
+    printf("Node %d bcst(PID:%d T:%d):%s\n",lc_node_num,getpid(), lc_logic_clock, sendBuff );
+  }
   for (int i = 0; i < lc_node_sum; ++i) {
-    memset(sendBuff, 0,sizeof(sendBuff));
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
   	{
   		printf("\n Error : Could not create socket \n");
@@ -101,17 +106,13 @@ void lc_broadcast_msg(struct lc_msg msg) {
     		}
       } // end of try connection
 
-    encode_msg(sendBuff,msg);
+
     // sprintf(sendBuff, "Node %d send msg to Node %d", lc_node_num, i );
     send(sockfd, sendBuff, sizeof(sendBuff), MSG_DONTWAIT);
     shutdown(sockfd, SHUT_WR);  //msg 发送完毕，断开输出流，向对方发送FIN包
     // shutdown(sockfd,SHUT_WR);
   }// finish broadcast
-  if(msg.msg_type_ == MSG){
-    // lamport's clock rule, after sending a message, logic clock plus 1
-    lc_logic_clock++;
-    printf("Node %d send(PID:%d T:%d):%s\n",lc_node_num,getpid(), lc_logic_clock, sendBuff );    
-  }
+
 }
 void lc_send_msg(int port, struct lc_msg msg) {
   int sockfd = 0, n = 0;
