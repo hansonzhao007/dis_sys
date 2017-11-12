@@ -80,6 +80,7 @@ void lc_broadcast_msg(struct lc_msg msg) {
   		return;
   	}
 
+    // try to build a connection
     for(int nsec = 1; nsec <= MAXSLEEP; nsec <<= 1) {
      		if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == 0) {
         // Connection accepted
@@ -98,13 +99,18 @@ void lc_broadcast_msg(struct lc_msg msg) {
     				return;
     			}
     		}
-      } // end of for
+      } // end of try connection
 
     encode_msg(sendBuff,msg);
     // sprintf(sendBuff, "Node %d send msg to Node %d", lc_node_num, i );
     send(sockfd, sendBuff, sizeof(sendBuff), MSG_DONTWAIT);
     shutdown(sockfd, SHUT_WR);  //msg 发送完毕，断开输出流，向对方发送FIN包
     // shutdown(sockfd,SHUT_WR);
+  }// finish broadcast
+  if(msg.msg_type_ == MSG){
+    // lamport's clock rule, after sending a message, logic clock plus 1
+    lc_logic_clock++;
+    printf("Node %d send(PID:%d T:%d):%s\n",lc_node_num,getpid(), lc_logic_clock, sendBuff );    
   }
 }
 void lc_send_msg(int port, struct lc_msg msg) {
@@ -161,7 +167,6 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
 
   switch(msg.msg_type_){
     case CMD: // used to sync clock
-
       // send node clock to parent
       if(strncmp(msg.msg_, "SYNC", 4) == 0) {
           struct lc_msg m;
@@ -174,13 +179,16 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
       else if (strncmp(msg.msg_, "SET_CLOCK",9) == 0) {
         lc_logic_clock = msg.time_;
         is_clock_sync = true;
-        printf("Node %d set clock:%s\n", lc_node_num, buffer);
+        // printf("Node %d set clock:%s\n", lc_node_num, buffer);
       }
 
     break;
 
     case MSG:
-      printf("Node %d(PID:%d):%s\n",lc_node_num,getpid(), buffer );
+      // lamport's clock rule, after recv a msg, it adjust it's logic clock to the max value between time stamp and its own clock
+      lc_logic_clock = lc_logic_clock > msg.time_ ? lc_logic_clock: msg.time_;
+      lc_logic_clock++;
+      printf("Node %d recv(PID:%d T:%d):%s\n",lc_node_num,getpid(), lc_logic_clock, buffer );
     break;
 
     default:
@@ -191,7 +199,7 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
 void lc_parent_deal_with_msg(struct lc_msg msg) {
   char buffer[64];
   encode_msg(buffer, msg);
-  printf("Parent %d(PID:%d) recv:%s\n",lc_node_num,getpid(), buffer );
+  // printf("Parent %d(PID:%d) recv:%s\n",lc_node_num,getpid(), buffer );
   switch(msg.msg_type_) {
     case CMD:
         if(strncmp(msg.msg_, "SYNC", 4) == 0) {

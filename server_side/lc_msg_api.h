@@ -10,6 +10,7 @@ struct lc_msg {
   int time_;
   int pid_;
   enum msg_type msg_type_;
+  int ack_time_;
 };
 struct lc_msg msg_generate(enum msg_type t, int tm, int pid, char * m);
 void encode_msg(char* buf,struct lc_msg msg);

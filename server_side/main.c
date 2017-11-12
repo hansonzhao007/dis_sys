@@ -42,8 +42,12 @@ int main(int argc, char *argv[])
     if(getpid() != parent_pid) {
       while(!is_clock_sync); // wait until clock is synchronized
       printf("Node %d clock synchronized. clock is: %d\n", lc_node_num, lc_logic_clock);
-
-      // after clock is synchronized, then send
+      sleep(1);// wait for all node synchronize
+      // after clock is synchronized, then node isdue an event
+      char buffer[64];
+      sprintf(buffer, "Node %d issue an event.", lc_node_num);
+      // current node broadcast the issue m
+      lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),buffer));
     }
     else { //parent process as the time deamon
       // create recieve service for parent process
