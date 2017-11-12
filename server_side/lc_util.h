@@ -18,5 +18,5 @@ int lc_node_sum;
 int lc_node_num;
 int lc_logic_clock;
 bool is_clock_sync;
-
+int lc_issue_count;
 #endif

@@ -16,6 +16,10 @@ int main(int argc, char *argv[])
     pid_t wpid,pid;
     int status = 0;
 
+    queue_init(&lc_order_queue, TOTAL);
+    queue_init(&lc_order_issue_queue, TOTAL);
+    queue_init(&lc_FIFO_queue, PARTIAL);
+
     // create lc_node_sum processes, each process represent a node
     for (int i = 0; i < lc_node_sum; i++) {
         if ((pid = fork()) < 0) {
@@ -43,9 +47,12 @@ int main(int argc, char *argv[])
       while(!is_clock_sync); // wait until clock is synchronized
       printf("Node %d clock synchronized. clock is: %d\n", lc_node_num, lc_logic_clock);
       sleep(1);// wait for all node synchronize
+
       // after clock is synchronized, then node isdue an event
       char buffer[64];
-      sprintf(buffer, "Node %d issue an event.", lc_node_num);
+      sprintf(buffer, "ISSUE_FROM_NODE%d", lc_node_num);
+      lc_issue_count++; // issue count plus one
+
       // current node broadcast the issue m
       lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),buffer));
     }
