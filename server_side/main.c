@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
         lc_node_sum = atoi(argv[1]);
         lc_node_sum = lc_node_sum > 10? 10: lc_node_sum;
     }
-    printf("There are %d nodes\r\n", lc_node_sum);
+    printf("There are %d nodes, parent pid %d\r\n", lc_node_sum, getpid());
     fflush(stdout);
     pid_t wpid,pid;
     int status = 0;
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
             lc_init_clock();
             // create a service thread to recieve message
             pthread_t precv_msg;
-            pthread_create(&precv_msg, NULL, lc_recv_service, NULL);
+            pthread_create(&precv_msg, NULL, lc_recv_service, (void*)(lc_node_deal_with_msg));
 
             break;
         }else { // parent process
@@ -40,15 +40,17 @@ int main(int argc, char *argv[])
 
     // child prcocess send message to each other
     if(getpid() != parent_pid) {
-      // while(!is_clock_sync); // wait until clock is synchronized
-      struct lc_msg msg;
-      msg.msg_type_ = CMD;
-      msg.pid_ = getpid();
-      msg.time_ = lc_logic_clock;
-      sprintf(msg.msg_, "%s","Test");
-      lc_broadcast_msg(msg);
+      while(!is_clock_sync); // wait until clock is synchronized
+      printf("Node %d clock synchronized. clock is: %d\n", lc_node_num, lc_logic_clock);
+
+      // after clock is synchronized, then send
     }
     else { //parent process as the time deamon
+      // create recieve service for parent process
+      lc_node_num = lc_node_sum;
+      pthread_t precv_msg;
+      pthread_create(&precv_msg, NULL, lc_recv_service, (void*)(lc_parent_deal_with_msg));
+
       lc_sync_clock();
     }
 

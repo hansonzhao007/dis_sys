@@ -20,9 +20,9 @@
 
 #define MAXSLEEP 8
 #define MAX_NODE ((10))
-const int port_list[MAX_NODE]={
+const int port_list[MAX_NODE+1]={
     8080,8081,8082,8083,8084,
-    8085,8086,8087,8088,8089
+    8085,8086,8087,8088,8089,8090
 };
 
 
@@ -31,21 +31,32 @@ int lc_node_num = 0;
 int lc_logic_clock = 0;
 bool is_clock_sync = false;
 
+// used to sync node's logic clock
+int lc_node_clock_sum = 0;
+int lc_node_clock_count = 0;
+
 int rand_in_range(int minimum_number, int max_number){
   srand(getpid());
   return rand() % ((max_number + 1 - minimum_number) + minimum_number);
 }
 
 void lc_init_clock(void) {
-  lc_logic_clock = rand_in_range(1,10);
+  lc_logic_clock = rand_in_range(1,20);
   // #ifdef DEBUG
   printf("Node %d(PID:%d) has clock:%d\n", lc_node_num, getpid(), lc_logic_clock );
   // #endif
 }
 void lc_sync_clock(void) {
-
+  struct lc_msg msg;
+  msg.msg_type_ = CMD;
+  msg.pid_ = getpid();
+  msg.time_ = lc_logic_clock;
+  sprintf(msg.msg_, "%s","SYNC_CLOCK");
+  // send sync cmd to all nodes
+  lc_broadcast_msg(msg);
 }
 
+// breadcast msg to all node except parent process
 void lc_broadcast_msg(struct lc_msg msg) {
   int sockfd = 0, n = 0;
   char sendBuff[64];
@@ -96,14 +107,117 @@ void lc_broadcast_msg(struct lc_msg msg) {
     // shutdown(sockfd,SHUT_WR);
   }
 }
+void lc_send_msg(int port, struct lc_msg msg) {
+  int sockfd = 0, n = 0;
+  char sendBuff[64];
+  struct sockaddr_in serv_addr;
+  memset(sendBuff, 0,sizeof(sendBuff));
+  if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+  {
+    printf("\n Error : Could not create socket \n");
+    return ;
+  }
+  memset(&serv_addr, 0, sizeof(serv_addr));
 
-void lc_deal_with_msg(struct lc_msg msg) {
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(port);
+
+  if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0)
+  {
+    printf("\n inet_pton error occured\n");
+    return;
+  }
+
+  for(int nsec = 1; nsec <= MAXSLEEP; nsec <<= 1) {
+      if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == 0) {
+      // Connection accepted
+        #ifdef DEBUG
+          printf("\t Connect port %d success\n",port);
+        #endif
+        break;
+      }
+      else {
+        if (nsec <= MAXSLEEP/2) {
+          sleep(nsec);
+        }
+        else {
+          printf("\n Error : Connect port %d Failed \n",port);
+          exit(0);
+          return;
+        }
+      }
+    } // end of for
+
+  encode_msg(sendBuff,msg);
+  // sprintf(sendBuff, "Node %d send msg to Node %d", lc_node_num, i );
+  send(sockfd, sendBuff, sizeof(sendBuff), MSG_DONTWAIT);
+  shutdown(sockfd, SHUT_WR);  //msg 发送完毕，断开输出流，向对方发送FIN包
+}
+
+typedef void (*lc_deal_func)(struct lc_msg );
+void lc_node_deal_with_msg(struct lc_msg msg) {
   char buffer[64];
   encode_msg(buffer, msg);
-  printf("Node %d(PID:%d):%s\n",lc_node_num,getpid(), buffer );
+
+  switch(msg.msg_type_){
+    case CMD: // used to sync clock
+
+      // send node clock to parent
+      if(strncmp(msg.msg_, "SYNC", 4) == 0) {
+          struct lc_msg m;
+          m.time_ = lc_logic_clock;
+          m.msg_type_ = CMD;
+          m.pid_ = getpid();
+          sprintf(m.msg_,"%s","SYNC");
+          lc_send_msg(port_list[lc_node_sum],m);
+      }
+      else if (strncmp(msg.msg_, "SET_CLOCK",9) == 0) {
+        lc_logic_clock = msg.time_;
+        is_clock_sync = true;
+        printf("Node %d set clock:%s\n", lc_node_num, buffer);
+      }
+
+    break;
+
+    case MSG:
+      printf("Node %d(PID:%d):%s\n",lc_node_num,getpid(), buffer );
+    break;
+
+    default:
+    break;
+  }
 }
+
+void lc_parent_deal_with_msg(struct lc_msg msg) {
+  char buffer[64];
+  encode_msg(buffer, msg);
+  printf("Parent %d(PID:%d) recv:%s\n",lc_node_num,getpid(), buffer );
+  switch(msg.msg_type_) {
+    case CMD:
+        if(strncmp(msg.msg_, "SYNC", 4) == 0) {
+          lc_node_clock_count++;
+          lc_node_clock_sum += msg.time_;
+
+          if(lc_node_clock_count == lc_node_sum) {// all node have send parent its clock value
+            int lc_standard_clock = lc_node_clock_sum / lc_node_clock_count;
+            struct lc_msg m = msg_generate(CMD, lc_standard_clock, getpid(), "SET_CLOCK");
+            lc_broadcast_msg(m);
+          }
+        }
+    break;
+
+    case MSG:
+    break;
+
+    default:
+    break;
+  }
+}
+
+
 // message recieve service
-void* lc_recv_service(void* data) {
+// define different msg recieve func, and as a parameter to pass to the service
+void* lc_recv_service(void* func) {
       fd_set master;    // master file descriptor list
       fd_set read_fds;  // temp file descriptor list for select()
       int fdmax;        // maximum file descriptor number
@@ -219,7 +333,7 @@ void* lc_recv_service(void* data) {
                           // we got some data from a client
                           struct lc_msg m;
                           decode_msg(buf,&m);
-                          lc_deal_with_msg(m);
+                          ((lc_deal_func)(func))(m);
 
                           // for(j = 0; j <= fdmax; j++) {
                           //     // send to everyone!

@@ -1,5 +1,15 @@
 #include "mylib.h"
 #include "lc_msg_api.h"
+
+struct lc_msg msg_generate(enum msg_type t, int tm, int pid, char * m) {
+  struct lc_msg msg;
+  msg.msg_type_ = t;
+  msg.time_ = tm;
+  msg.pid_ = pid;
+  sprintf(msg.msg_,"%s",m);
+  return msg;
+}
+
 // msg is encode like: msg_type-time-pid-msg
 void encode_msg(char* buf,struct lc_msg msg) {
   sprintf(buf,"%d-%d-%d-%s",msg.msg_type_, msg.time_, msg.pid_, msg.msg_);
