@@ -1,6 +1,0 @@
-Total Order: Node 3 issue <time:13, pid:28055, msg:ISSUE_FROM_NODE0>
-Total Order: Node 3 issue <time:13, pid:28056, msg:ISSUE_FROM_NODE1>
-Total Order: Node 3 issue <time:13, pid:28057, msg:ISSUE_FROM_NODE2>
-Total Order: Node 3 issue <time:13, pid:28061, msg:ISSUE_FROM_NODE5>
-Total Order: Node 3 issue <time:15, pid:28058, msg:ISSUE_FROM_NODE3>
-Total Order: Node 3 issue <time:15, pid:28060, msg:ISSUE_FROM_NODE4>

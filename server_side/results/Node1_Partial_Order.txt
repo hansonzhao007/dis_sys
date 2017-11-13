@@ -1,6 +1,7 @@
-Partial Order: Node 1 issue <time:13, pid:28056, msg:ISSUE_FROM_NODE1>
-Partial Order: Node 1 issue <time:13, pid:28057, msg:ISSUE_FROM_NODE2>
-Partial Order: Node 1 issue <time:13, pid:28055, msg:ISSUE_FROM_NODE0>
-Partial Order: Node 1 issue <time:13, pid:28061, msg:ISSUE_FROM_NODE5>
-Partial Order: Node 1 issue <time:15, pid:28060, msg:ISSUE_FROM_NODE4>
-Partial Order: Node 1 issue <time:15, pid:28058, msg:ISSUE_FROM_NODE3>
+Partial Order: Node 1 issue <time:7, pid:28966, msg:ISSUE_FROM_NODE6>
+Partial Order: Node 1 issue <time:7, pid:28960, msg:ISSUE_FROM_NODE2>
+Partial Order: Node 1 issue <time:7, pid:28964, msg:ISSUE_FROM_NODE4>
+Partial Order: Node 1 issue <time:7, pid:28962, msg:ISSUE_FROM_NODE3>
+Partial Order: Node 1 issue <time:7, pid:28965, msg:ISSUE_FROM_NODE5>
+Partial Order: Node 1 issue <time:7, pid:28959, msg:ISSUE_FROM_NODE1>
+Partial Order: Node 1 issue <time:22, pid:28958, msg:ISSUE_FROM_NODE0>

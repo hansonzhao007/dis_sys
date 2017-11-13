@@ -10,4 +10,4 @@ main: $(OBJ)
 	gcc $(DEBUG) -pthread -o  $@ $^ $(CFLAGS)
 
 clean:
-	-rm lg_deamon $(OBJ)
+	-rm main $(OBJ)
