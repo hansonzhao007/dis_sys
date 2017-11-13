@@ -192,13 +192,21 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
       lc_logic_clock++;
       printf("Node %d recv(PID:%d T:%d):%s\n",lc_node_num,getpid(), lc_logic_clock, buffer );
       if(strncmp(msg.msg_, "ISSUE",5) == 0) {// if nod recieve issue msg, push it in message queue
-        lc_order_queue.enqueue(&lc_order_queue, msg); // store the msg to be ack, after broadcast the peek element, that element will be delete from this queue
-        lc_order_issue_queue.enqueue(&lc_order_issue_queue, msg); // store issue to be process, only the one in the front and be ack by all nodes could be processed
+        if (msg.pid_ == getpid() && msg_not_in_queue(&lc_order_issue_queue,msg)) {
+          lc_issue_count++; // issue count plus one
+        }
+        lc_order_msg_queue.enqueue(&lc_order_msg_queue, msg); // store the msg to be ack, after broadcast the peek element, that element will be delete from this queue
+        if(msg_not_in_queue(&lc_order_issue_queue,msg))
+          lc_order_issue_queue.enqueue(&lc_order_issue_queue, msg); // store issue to be process, only the one in the front and be ack by all nodes could be processed
         lc_FIFO_queue.enqueue(&lc_FIFO_queue,msg);
 
       }
       else if (strncmp(msg.msg_, "ACK", 3) == 0) {
-        // find the ACK belong to which msg in lc_order_issue_queue, plus one to its ack_time_
+        // printf("\t ---- Node %d queue before ACK\n", lc_node_num);
+        // print_queue(lc_node_num,&lc_order_issue_queue);
+
+        // find the ACK belonging to issue in lc_order_issue_queue, plus one to its ack_time_
+        // One senario is possible: issue m does not come but its ACK come in, so we have to add this issue in issue queue but not in message queue
         char* type = strtok(msg.msg_, "_");
         char* t = strtok(NULL,"_");
         char* p = strtok(NULL,"_");
@@ -213,42 +221,35 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
           cur = cur->next_;
         }
 
+        if(cur == NULL) {// the ack message comes before its issue message come in(ACK消息先于事件本身到)
+          // according to ACK info, add an issue to lc_order_issue_queue.
+          char* type = strtok(msg.msg_, "_");
+          char* t = strtok(NULL,"_");
+          char* p = strtok(NULL,"_");
+          int timestamp = atoi(t);
+          int pid = atoi(p);
+          lc_msg m = msg_generate(MSG,timestamp,pid,"ACK_BEFORE_ISSUE");
+          m.ack_time_ ++ ;
+          lc_order_issue_queue.enqueue(&lc_order_issue_queue, m);
+
+          // 如果该 ACK 代表的是自己 issue 的事件, 那么issue count 需要 ++
+          if (pid == getpid()) {
+            lc_issue_count++;
+          }
+        }
+
         lc_msg front_issue = lc_order_issue_queue.peek(&lc_order_issue_queue);
         if(front_issue.ack_time_ == lc_node_sum){ // the head element of the queue has been ack by all nodes, can be processed
           lc_msg issue_event = lc_order_issue_queue.dequeue(&lc_order_issue_queue);
-          lc_issue_count--;
+          if (issue_event.pid_ == getpid()) { // 如果是自己的事件,那么 lc_issue_count --
+            lc_issue_count--;
+          }
           printf("\t Total Order: Node %d issue <time:%d, pid:%d, msg:%s>\n", lc_node_num, issue_event.time_, issue_event.pid_, issue_event.msg_);
         }
+
+        printf("\t ---- Node %d issue queue(%d), message queue(%d) issue count(%d) after ACK\n", lc_node_num,lc_order_issue_queue.size_, lc_order_msg_queue.size_,lc_issue_count);
+        print_queue(lc_node_num,&lc_order_issue_queue);
       }
-
-      // Lamport's totally order multicasting
-      if(lc_order_queue.size_ != 0) { // There exist msg have not beed ACK
-        // following is three condition to send ACK, and two condition combine to one in the first one
-        // this is the condition that 1.Pi has not made an update request or 2.Pi's update has been processed
-        if(lc_issue_count == 0) { // there is no new issue, then broadcast ACK for all msg in queue
-          while(!lc_order_queue.isEmpty(&lc_order_queue)) {
-            lc_msg m = lc_order_queue.dequeue(&lc_order_queue);
-            sprintf(m.msg_,"ACK_%d_%d",m.time_,m.pid_);
-            lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),m.msg_)); // ACK for this particular message
-          }
-        }
-        else { // Here we send ACK for Pi's identifier is greater than or equal to Pj's identifier
-          while(!lc_order_queue.isEmpty(&lc_order_queue)) {
-            lc_msg m = lc_order_queue.peek(&lc_order_queue);
-            if ( getpid() >= m.pid_) {
-              // printf("queue size:%d\n",lc_order_queue.size_ );
-              lc_order_queue.dequeue(&lc_order_queue);
-              // printf("queue size after de:%d\n",lc_order_queue.size_ );
-              sprintf(m.msg_,"ACK_%d_%d",m.time_,m.pid_);
-              lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),m.msg_)); // ACK for this particular message
-            }
-            else{
-              break;
-            }
-          }
-        }
-      }// end of Lamport's totally order multicasting
-
 
     break;
 

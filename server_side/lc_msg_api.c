@@ -1,7 +1,7 @@
 #include "mylib.h"
 #include "lc_msg_api.h"
 
-lc_msg_queue lc_order_queue;
+lc_msg_queue lc_order_msg_queue;
 lc_msg_queue lc_order_issue_queue;
 
 lc_msg_queue lc_FIFO_queue;
@@ -34,10 +34,10 @@ bool is_empty_msg(lc_msg m) {
   return false;
 }
 
-void print_msg(lc_msg m) {
+void print_msg(int n, lc_msg m) {
   char buf[64];
   encode_msg(buf, m);
-  printf("%s\n",buf);
+  printf("\t Node %d ---- %s-ACK:%d\n",n,buf,m.ack_time_);
 }
 // msg is encode like: msg_type-time-pid-msg
 void encode_msg(char* buf,struct lc_msg msg) {
@@ -163,15 +163,28 @@ void queue_init(lc_msg_queue* queue, enum order_type t) {
   queue->isEmpty = is_queue_empty;
 }
 
-void print_queue(lc_msg_queue* queue) {
+void print_queue(int n,lc_msg_queue* queue) {
   lc_msg_node* cur = queue->head_;
   while(cur!=NULL) {
-    print_msg(cur->msg_);
+    print_msg(n, cur->msg_);
     cur=cur->next_;
+  }
+  if(queue->isEmpty(queue)) {
+    printf("Node %d queue empty.\n", n);
   }
 }
 
-
+bool msg_not_in_queue(lc_msg_queue* queue,lc_msg msg) {
+  lc_msg_node* cur = queue->head_;
+  while (cur != NULL) {
+    // msg is in queue
+    if (cur->msg_.time_ == msg.time_ && cur->msg_.pid_ == msg.pid_) {
+      return false;
+    }
+    cur = cur->next_;
+  }
+  return true;
+}
 //
 // int main(void) {
 //   char buffer[256];

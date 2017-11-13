@@ -1,0 +1,362 @@
+$ ./main 4
+There are 4 nodes, parent pid 21642
+Node 0(PID:21643) has clock:5
+Node 1(PID:21644) has clock:11
+Node 2(PID:21645) has clock:10
+Node 3(PID:21646) has clock:6
+Node 2 clock synchronized. clock is: 8
+Node 1 clock synchronized. clock is: 8
+Node 0 clock synchronized. clock is: 8
+Node 3 clock synchronized. clock is: 8
+Node 2 bcst(PID:21645 T:9):1-8-21645-ISSUE_FROM_NODE2
+Node 1 bcst(PID:21644 T:9):1-8-21644-ISSUE_FROM_NODE1
+Node 0 bcst(PID:21643 T:9):1-8-21643-ISSUE_FROM_NODE0
+Node 3 bcst(PID:21646 T:9):1-8-21646-ISSUE_FROM_NODE3
+Node 0 recv(PID:21643 T:10):1-8-21643-ISSUE_FROM_NODE0
+Node 0 recv(PID:21643 T:11):1-8-21646-ISSUE_FROM_NODE3
+Node 0 recv(PID:21643 T:12):1-8-21645-ISSUE_FROM_NODE2
+Node 1 recv(PID:21644 T:10):1-8-21646-ISSUE_FROM_NODE3
+Node 1 recv(PID:21644 T:11):1-8-21645-ISSUE_FROM_NODE2
+Node 1 recv(PID:21644 T:12):1-8-21643-ISSUE_FROM_NODE0
+Node 2 recv(PID:21645 T:10):1-8-21645-ISSUE_FROM_NODE2
+Node 0 recv(PID:21643 T:13):1-8-21644-ISSUE_FROM_NODE1
+Node 2 recv(PID:21645 T:11):1-8-21643-ISSUE_FROM_NODE0
+Node 2 recv(PID:21645 T:12):1-8-21646-ISSUE_FROM_NODE3
+Node 3 recv(PID:21646 T:10):1-8-21643-ISSUE_FROM_NODE0
+Node 3 recv(PID:21646 T:11):1-8-21646-ISSUE_FROM_NODE3
+Node 3 bcst(PID:21646 T:12):1-10-21646-ACK_8_21643
+Node 2 bcst(PID:21645 T:13):1-12-21645-ACK_8_21643
+Node 3 recv(PID:21646 T:13):1-8-21645-ISSUE_FROM_NODE2
+Node 0 recv(PID:21643 T:14):1-10-21646-ACK_8_21643
+	 ---- Node 0 issue queue(4), message queue(4) after ACK
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:1
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 0 bcst(PID:21643 T:15):1-14-21643-ACK_8_21643
+Node 0 recv(PID:21643 T:16):1-12-21645-ACK_8_21643
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+Node 1 recv(PID:21644 T:13):1-8-21644-ISSUE_FROM_NODE1
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:2
+Node 1 recv(PID:21644 T:14):1-12-21645-ACK_8_21643
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 ---- Node 1 issue queue(4), message queue(4) after ACK
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:1
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 2 recv(PID:21645 T:14):1-8-21644-ISSUE_FROM_NODE1
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 0 recv(PID:21643 T:17):1-14-21643-ACK_8_21643
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 2 recv(PID:21645 T:15):1-14-21643-ACK_8_21643
+	 ---- Node 2 issue queue(4), message queue(3) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:1
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 1 recv(PID:21644 T:15):1-14-21643-ACK_8_21643
+	 ---- Node 1 issue queue(4), message queue(4) after ACK
+Node 3 recv(PID:21646 T:15):1-14-21643-ACK_8_21643
+	 ---- Node 3 issue queue(3), message queue(2) after ACK
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:1
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:2
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 2 recv(PID:21645 T:16):1-10-21646-ACK_8_21643
+Node 1 recv(PID:21644 T:17):1-10-21646-ACK_8_21643
+	 ---- Node 2 issue queue(4), message queue(3) after ACK
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:2
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+Node 3 recv(PID:21646 T:16):1-8-21644-ISSUE_FROM_NODE1
+Node 3 recv(PID:21646 T:17):1-10-21646-ACK_8_21643
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+Node 2 bcst(PID:21645 T:17):1-16-21645-ACK_8_21644
+	 ---- Node 3 issue queue(4), message queue(2) after ACK
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:2
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 3 recv(PID:21646 T:19):1-12-21645-ACK_8_21643
+Node 2 recv(PID:21645 T:18):1-12-21645-ACK_8_21643
+	 ---- Node 3 issue queue(4), message queue(2) after ACK
+	 ---- Node 2 issue queue(4), message queue(2) after ACK
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+Node 0 recv(PID:21643 T:18):1-16-21645-ACK_8_21644
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:0
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:1
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 1 recv(PID:21644 T:18):1-16-21645-ACK_8_21644
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:1
+Node 3 bcst(PID:21646 T:18):1-17-21646-ACK_8_21644
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 2 recv(PID:21645 T:19):1-16-21645-ACK_8_21644
+	 ---- Node 2 issue queue(4), message queue(2) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:1
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 1 recv(PID:21644 T:19):1-17-21646-ACK_8_21644
+Node 3 recv(PID:21646 T:20):1-16-21645-ACK_8_21644
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+Node 2 bcst(PID:21645 T:20):1-19-21645-ACK_8_21645
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+Node 0 recv(PID:21643 T:19):1-17-21646-ACK_8_21644
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 ---- Node 3 issue queue(4), message queue(2) after ACK
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:1
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+Node 2 recv(PID:21645 T:21):1-17-21646-ACK_8_21644
+	 ---- Node 2 issue queue(4), message queue(1) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+Node 1 recv(PID:21644 T:20):1-19-21645-ACK_8_21645
+Node 3 recv(PID:21646 T:21):1-17-21646-ACK_8_21644
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 ---- Node 3 issue queue(4), message queue(2) after ACK
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:1
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:0
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 3 bcst(PID:21646 T:22):1-21-21646-ACK_8_21645
+Node 0 recv(PID:21643 T:20):1-19-21645-ACK_8_21645
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:1
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 2 recv(PID:21645 T:22):1-19-21645-ACK_8_21645
+	 ---- Node 2 issue queue(4), message queue(1) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+Node 0 recv(PID:21643 T:22):1-21-21646-ACK_8_21645
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:1
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 1 recv(PID:21644 T:22):1-21-21646-ACK_8_21645
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+Node 3 recv(PID:21646 T:23):1-19-21645-ACK_8_21645
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 ---- Node 3 issue queue(4), message queue(1) after ACK
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:1
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 2 recv(PID:21645 T:23):1-21-21646-ACK_8_21645
+	 ---- Node 2 issue queue(4), message queue(1) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 3 recv(PID:21646 T:24):1-21-21646-ACK_8_21645
+	 ---- Node 3 issue queue(4), message queue(1) after ACK
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:0
+Node 3 bcst(PID:21646 T:25):1-24-21646-ACK_8_21646
+Node 0 recv(PID:21643 T:25):1-24-21646-ACK_8_21646
+	 ---- Node 0 issue queue(4), message queue(3) after ACK
+	 Node 0 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 1 recv(PID:21644 T:25):1-24-21646-ACK_8_21646
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 2 recv(PID:21645 T:25):1-24-21646-ACK_8_21646
+	 ---- Node 2 issue queue(4), message queue(1) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 3 recv(PID:21646 T:26):1-24-21646-ACK_8_21646
+	 ---- Node 3 issue queue(4), message queue(0) after ACK
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 1 bcst(PID:21644 T:16):1-15-21644-ACK_8_21643
+Node 0 recv(PID:21643 T:26):1-15-21644-ACK_8_21643
+	 Total Order: Node 0 issue <time:8, pid:21643, msg:ISSUE_FROM_NODE0>
+	 ---- Node 0 issue queue(3), message queue(2) after ACK
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:2
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 0 bcst(PID:21643 T:27):1-26-21643-ACK_8_21644
+Node 0 recv(PID:21643 T:28):1-26-21643-ACK_8_21644
+	 ---- Node 0 issue queue(3), message queue(2) after ACK
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 1 recv(PID:21644 T:27):1-26-21643-ACK_8_21644
+	 ---- Node 1 issue queue(4), message queue(3) after ACK
+	 Node 1 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 2 recv(PID:21645 T:27):1-26-21643-ACK_8_21644
+	 ---- Node 2 issue queue(4), message queue(1) after ACK
+	 Node 2 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 1 recv(PID:21644 T:28):1-15-21644-ACK_8_21643
+	 Total Order: Node 1 issue <time:8, pid:21643, msg:ISSUE_FROM_NODE0>
+	 ---- Node 1 issue queue(3), message queue(3) after ACK
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 2 recv(PID:21645 T:28):1-15-21644-ACK_8_21643
+	 Total Order: Node 2 issue <time:8, pid:21643, msg:ISSUE_FROM_NODE0>
+Node 3 recv(PID:21646 T:27):1-26-21643-ACK_8_21644
+	 ---- Node 3 issue queue(4), message queue(0) after ACK
+	 Node 3 ---- 1-8-21643-ISSUE_FROM_NODE0-ACK:3
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+Node 2 bcst(PID:21645 T:29):1-28-21645-ACK_8_21646
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+	 ---- Node 2 issue queue(3), message queue(0) after ACK
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 0 bcst(PID:21643 T:29):1-28-21643-ACK_8_21645
+Node 0 recv(PID:21643 T:30):1-28-21643-ACK_8_21645
+	 ---- Node 0 issue queue(3), message queue(1) after ACK
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 1 recv(PID:21644 T:29):1-28-21643-ACK_8_21645
+	 ---- Node 1 issue queue(3), message queue(3) after ACK
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 3 recv(PID:21646 T:28):1-15-21644-ACK_8_21643
+	 Total Order: Node 3 issue <time:8, pid:21643, msg:ISSUE_FROM_NODE0>
+	 ---- Node 3 issue queue(3), message queue(0) after ACK
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:2
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 0 recv(PID:21643 T:31):1-28-21645-ACK_8_21646
+	 ---- Node 0 issue queue(3), message queue(1) after ACK
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:2
+Node 1 bcst(PID:21644 T:30):1-29-21644-ACK_8_21644
+Node 2 recv(PID:21645 T:30):1-28-21643-ACK_8_21645
+	 ---- Node 2 issue queue(3), message queue(0) after ACK
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 1 recv(PID:21644 T:31):1-28-21645-ACK_8_21646
+	 ---- Node 1 issue queue(3), message queue(2) after ACK
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:2
+Node 3 recv(PID:21646 T:29):1-28-21643-ACK_8_21645
+	 ---- Node 3 issue queue(3), message queue(0) after ACK
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:1
+Node 0 bcst(PID:21643 T:32):1-31-21643-ACK_8_21646
+Node 2 recv(PID:21645 T:31):1-28-21645-ACK_8_21646
+	 ---- Node 2 issue queue(3), message queue(0) after ACK
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+Node 0 recv(PID:21643 T:33):1-31-21643-ACK_8_21646
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 ---- Node 0 issue queue(3), message queue(0) after ACK
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:2
+	 Node 0 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+Node 1 recv(PID:21644 T:32):1-31-21643-ACK_8_21646
+	 ---- Node 1 issue queue(3), message queue(2) after ACK
+	 Node 1 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+Node 3 recv(PID:21646 T:30):1-28-21645-ACK_8_21646
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 ---- Node 3 issue queue(3), message queue(0) after ACK
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:2
+Node 2 recv(PID:21645 T:32):1-31-21643-ACK_8_21646
+	 ---- Node 2 issue queue(3), message queue(0) after ACK
+	 Node 2 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+Node 3 recv(PID:21646 T:32):1-31-21643-ACK_8_21646
+	 ---- Node 3 issue queue(3), message queue(0) after ACK
+	 Node 3 ---- 1-8-21644-ISSUE_FROM_NODE1-ACK:3
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+Node 0 recv(PID:21643 T:34):1-29-21644-ACK_8_21644
+	 Total Order: Node 0 issue <time:8, pid:21644, msg:ISSUE_FROM_NODE1>
+	 ---- Node 0 issue queue(2), message queue(0) after ACK
+	 Node 0 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 0 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+Node 1 recv(PID:21644 T:33):1-29-21644-ACK_8_21644
+	 Total Order: Node 1 issue <time:8, pid:21644, msg:ISSUE_FROM_NODE1>
+	 ---- Node 1 issue queue(2), message queue(2) after ACK
+	 Node 1 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 1 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+Node 2 recv(PID:21645 T:33):1-29-21644-ACK_8_21644
+	 Total Order: Node 2 issue <time:8, pid:21644, msg:ISSUE_FROM_NODE1>
+	 ---- Node 2 issue queue(2), message queue(0) after ACK
+	 Node 2 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 2 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3
+Node 3 recv(PID:21646 T:33):1-29-21644-ACK_8_21644
+	 Total Order: Node 3 issue <time:8, pid:21644, msg:ISSUE_FROM_NODE1>
+	 ---- Node 3 issue queue(2), message queue(0) after ACK
+	 Node 3 ---- 1-8-21645-ISSUE_FROM_NODE2-ACK:3
+	 Node 3 ---- 1-8-21646-ISSUE_FROM_NODE3-ACK:3

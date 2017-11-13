@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     pid_t wpid,pid;
     int status = 0;
 
-    queue_init(&lc_order_queue, TOTAL);
+    queue_init(&lc_order_msg_queue, TOTAL);
     queue_init(&lc_order_issue_queue, TOTAL);
     queue_init(&lc_FIFO_queue, PARTIAL);
 
@@ -51,10 +51,43 @@ int main(int argc, char *argv[])
       // after clock is synchronized, then node isdue an event
       char buffer[64];
       sprintf(buffer, "ISSUE_FROM_NODE%d", lc_node_num);
-      lc_issue_count++; // issue count plus one
+      // lc_issue_count++; // issue count plus one
 
       // current node broadcast the issue m
       lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),buffer));
+
+      while(1) {
+        // Lamport's totally order multicasting
+        // if(lc_order_msg_queue.size_ != 0) 
+        { // There exist msg have not beed ACK
+          // following is three condition to send ACK, and two condition combine to one in the first one
+          // this is the condition that 1.Pi has not made an update request or 2.Pi's update has been processed
+          if(lc_issue_count == 0) { // there is no new issue, then broadcast ACK for all msg in queue
+            while(!lc_order_msg_queue.isEmpty(&lc_order_msg_queue)) {
+              lc_msg m = lc_order_msg_queue.dequeue(&lc_order_msg_queue);
+              sprintf(m.msg_,"ACK_%d_%d",m.time_,m.pid_);
+              lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),m.msg_)); // ACK for this particular message
+            }
+          }
+          else { // Here we send ACK for Pi's identifier is greater than or equal to Pj's identifier
+            while(!lc_order_msg_queue.isEmpty(&lc_order_msg_queue)) {
+              lc_msg m = lc_order_msg_queue.peek(&lc_order_msg_queue);
+              if ( getpid() >= m.pid_) {
+                // printf("queue size:%d\n",lc_order_queue.size_ );
+                lc_order_msg_queue.dequeue(&lc_order_msg_queue);
+                // printf("queue size after de:%d\n",lc_order_queue.size_ );
+                sprintf(m.msg_,"ACK_%d_%d",m.time_,m.pid_);
+                lc_broadcast_msg(msg_generate(MSG,lc_logic_clock,getpid(),m.msg_)); // ACK for this particular message
+              }
+              else{
+                break;
+              }
+            }
+          }
+        }// lc_order_msg_queue is empty now
+
+        // end of Lamport's totally order multicasting
+      }
     }
     else { //parent process as the time deamon
       // create recieve service for parent process

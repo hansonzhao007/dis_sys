@@ -47,9 +47,10 @@ struct lc_msg msg_generate(enum msg_type t, int tm, int pid, char * m);
 void encode_msg(char* buf,struct lc_msg msg);
 void decode_msg(char* str,struct lc_msg* pmsg);
 void queue_init(lc_msg_queue* queue, enum order_type t);
-void print_msg(lc_msg m);
-
-extern lc_msg_queue lc_order_queue;
+void print_msg(int n,lc_msg m);
+void print_queue(int n, lc_msg_queue* queue) ;
+bool msg_not_in_queue(lc_msg_queue* queue,lc_msg msg);
+extern lc_msg_queue lc_order_msg_queue;
 extern lc_msg_queue lc_order_issue_queue;
 extern lc_msg_queue lc_FIFO_queue;
 #endif
