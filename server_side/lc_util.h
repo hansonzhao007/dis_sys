@@ -13,7 +13,9 @@ void *lc_recv_service(void* data);
 void pr_exit(int status);
 void lc_sync_clock(void);
 void lc_init_clock(void);
-
+void initial_file(int sum);
+void save_total_order(int num, char* buffer);
+void save_partial_order(int num, char* buffer);
 int lc_node_sum;
 int lc_node_num;
 int lc_logic_clock;

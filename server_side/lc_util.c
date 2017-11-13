@@ -199,7 +199,9 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
         if(msg_not_in_queue(&lc_order_issue_queue,msg))
           lc_order_issue_queue.enqueue(&lc_order_issue_queue, msg); // store issue to be process, only the one in the front and be ack by all nodes could be processed
         lc_FIFO_queue.enqueue(&lc_FIFO_queue,msg);
-
+        char buf[64];
+        sprintf(buf,"Partial Order: Node %d issue <time:%d, pid:%d, msg:%s>\n", lc_node_num, msg.time_, msg.pid_, msg.msg_);
+        save_partial_order(lc_node_num,buf);
       }
       else if (strncmp(msg.msg_, "ACK", 3) == 0) {
         // printf("\t ---- Node %d queue before ACK\n", lc_node_num);
@@ -238,17 +240,7 @@ void lc_node_deal_with_msg(struct lc_msg msg) {
           }
         }
 
-        lc_msg front_issue = lc_order_issue_queue.peek(&lc_order_issue_queue);
-        if(front_issue.ack_time_ == lc_node_sum){ // the head element of the queue has been ack by all nodes, can be processed
-          lc_msg issue_event = lc_order_issue_queue.dequeue(&lc_order_issue_queue);
-          if (issue_event.pid_ == getpid()) { // 如果是自己的事件,那么 lc_issue_count --
-            lc_issue_count--;
-          }
-          printf("\t Total Order: Node %d issue <time:%d, pid:%d, msg:%s>\n", lc_node_num, issue_event.time_, issue_event.pid_, issue_event.msg_);
-        }
 
-        printf("\t ---- Node %d issue queue(%d), message queue(%d) issue count(%d) after ACK\n", lc_node_num,lc_order_issue_queue.size_, lc_order_msg_queue.size_,lc_issue_count);
-        print_queue(lc_node_num,&lc_order_issue_queue);
       }
 
     break;
@@ -423,6 +415,32 @@ void* lc_recv_service(void* func) {
       } // END for(;;)--and you thought it would never end!
 }
 
+void initial_file(int sum) {
+  char buf[64];
+  for(int i = 0; i < sum; i++) {
+    sprintf(buf,"results/Node%d_Total_Order.txt", i);
+    int fd = open(buf, O_CREAT | O_RDWR | O_TRUNC, 0666);
+    close(fd);
+    sprintf(buf,"results/Node%d_Partial_Order.txt", i);
+    fd = open(buf, O_CREAT | O_RDWR | O_TRUNC, 0666);
+    close(fd);
+  }
+}
+
+void save_total_order(int num, char* buffer) {
+  char buf[64];
+  sprintf(buf,"results/Node%d_Total_Order.txt", num);
+  int fd = open(buf, O_CREAT | O_RDWR | O_APPEND, 0666);
+  write(fd,buffer,strlen(buffer));
+  close(fd);
+}
+void save_partial_order(int num, char* buffer){
+  char buf[64];
+  sprintf(buf,"results/Node%d_Partial_Order.txt", num);
+  int fd = open(buf, O_CREAT | O_RDWR | O_APPEND, 0666);
+  write(fd,buffer,strlen(buffer));
+  close(fd);
+}
 void pr_exit(int status)
 {
   if (WIFEXITED(status))

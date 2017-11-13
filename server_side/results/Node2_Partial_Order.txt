@@ -1,12 +1,6 @@
-Node 2 bcst(PID:16676 T:4):1-3-16676-ISSUE_FROM_NODE2
-Node 2 recv(PID:16676 T:5):1-3-16675-ISSUE_FROM_NODE1
-Node 2 bcst(PID:16676 T:6):1-5-16676-ACK_3_16675
-Node 2 recv(PID:16676 T:7):1-6-16675-ACK_3_16675
-Node 2 recv(PID:16676 T:8):1-5-16676-ACK_3_16675
-Node 2 recv(PID:16676 T:9):1-5-16674-ISSUE_FROM_NODE0
-Node 2 bcst(PID:16676 T:10):1-9-16676-ACK_5_16674
-Node 2 recv(PID:16676 T:11):1-4-16674-ACK_3_16676
-Node 2 recv(PID:16676 T:12):1-3-16676-ISSUE_FROM_NODE2
-Node 2 bcst(PID:16676 T:13):1-12-16676-ACK_3_16676
-Node 2 recv(PID:16676 T:14):1-9-16676-ACK_5_16674
-Node 2 recv(PID:16676 T:15):1-12-16676-ACK_3_16676
+Partial Order: Node 2 issue <time:13, pid:28057, msg:ISSUE_FROM_NODE2>
+Partial Order: Node 2 issue <time:13, pid:28056, msg:ISSUE_FROM_NODE1>
+Partial Order: Node 2 issue <time:13, pid:28055, msg:ISSUE_FROM_NODE0>
+Partial Order: Node 2 issue <time:13, pid:28061, msg:ISSUE_FROM_NODE5>
+Partial Order: Node 2 issue <time:15, pid:28060, msg:ISSUE_FROM_NODE4>
+Partial Order: Node 2 issue <time:15, pid:28058, msg:ISSUE_FROM_NODE3>
