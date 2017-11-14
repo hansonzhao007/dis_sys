@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
 {
     // record parent process pid
     pid_t parent_pid = getpid();
+    system("rm results/*");
     // set number of nodes
     if(argc == 2) {
         lc_node_sum = atoi(argv[1]);
