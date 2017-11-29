@@ -15,6 +15,7 @@ sudo adduser --ingroup hadoop hduser
 ```bash
 su hduser
 ssh-keygen -t rsa -P ""
+cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 ```
 
 The output looks like this:
@@ -112,7 +113,7 @@ Download Hadoop from the `Apache Download Mirrors` and extract the contents of t
 Add the following lines to the `end` of the `$HOME/.bashrc` file of user hduser. If you use a shell other than bash, you should of course update its appropriate configuration files instead of `.bashrc`.
 ```bash
 # Set Hadoop-related environment variables
-export HADOOP_PREFIX=/home/hduser/Program/hadoop/bin/hadoop
+export HADOOP_PREFIX=~/Program/hadoop #This is where your put your hadoop program
 export HADOOP_HOME=$HADOOP_PREFIX
 export HADOOP_COMMON_HOME=$HADOOP_PREFIX
 export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop
@@ -186,7 +187,7 @@ cp $HADOOP_HOME/etc/hadoop/*.xml ~/input
 
 run cmd:
 ```bash
-/usr/local/hadoop/bin/hadoop jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar grep ~/input ~/grep_example 'principal[.]*'
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar grep ~/input ~/grep_example 'principal[.]*'
 ```
 You can see output like following:
 ```bash
@@ -250,10 +251,10 @@ You can leave the settings below “as is” with the exception of the `hadoop.t
 
 Now we create the directory and set the required ownerships and permissions:
 ```bash
-mkdir -p /usr/local/hadoop/tmp
-sudo chown hduser:hadoop /usr/local/hadoop/tmp
+mkdir -p ~/Program/hadoop/tmp
+sudo chown hduser:hadoop ~/Program/hadoop/tmp
 # ...and if you want to tighten up security, chmod from 755 to 750...
-sudo chmod 750 /usr/local/hadoop/tmp
+sudo chmod 750 ~/Program/hadoop/tmp
 ```
 
 Add the following snippets between the <configuration> ... </configuration> tags in the respective configuration XML file.
@@ -261,42 +262,54 @@ Add the following snippets between the <configuration> ... </configuration> tags
 HDFS is the distributed file system used by Hadoop to store data in the cluster, capable of hosting very very (very) large files, splitting them over the nodes of the cluster. Theoretically, you don't need to have it running and files could instead be stored elsewhere like S3 or even the local file system (if using a purely local Hadoop installation). However, some applications require interactions with HDFS so you may have to set it up sooner or later if you're using third party modules. HDFS is composed of a`NameNode` which holds all the metadata regarding the stored files, and `DataNodes` (one per node in the cluster) which hold the actual data.
 
 The main HDFS configuration file is located at `$HADOOP_PREFIX/etc/hadoop/hdfs-site.xml`. If you've been following since the beginning, this file should be empty so it will use the default configurations outlined in [this page](http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/hdfs-default.xml). For a single-node installation of HDFS you'll want to change `hdfs-site.xml` to have, at the very least, the following:
+
+First you should create `dfs` folder, `datanode` & `namenode` folder under `tmp` folder.
+tmp
+ |-- dfs
+   |-- datanode
+   |-- namenode
+
 ```xml
+<configuration>
 <property>
-    <name>dfs.datanode.data.dir</name>
-    <value>/usr/local/hadoop/tmp/dfs/datanode</value>
-    <description>Comma separated list of paths on the local filesystem of a DataNode where it should store its blocks.</description>
+<name>dfs.datanode.data.dir</name>
+<value>file:///home/osboxes/Program/hadoop/tmp/dfs/datanode</value>
+<description>Comma separated list of paths on the local filesystem of a DataNode where it should store its blocks.</description>
 </property>
 
 <property>
-    <name>dfs.namenode.name.dir</name>
-    <value>/usr/local/hadoop/tmp/dfs/namenode</value>
-    <description>Path on the local filesystem where the NameNode stores the namespace and transaction logs persistently.</description>
+<name>dfs.namenode.name.dir</name>
+<value>file:///home/osboxes/Program/hadoop/tmp/dfs/namenode</value>
+<description>Path on the local filesystem where the NameNode stores the namespace and transaction logs persistently.</description>
 </property>
 
 <property>
-    <name>dfs.replication</name>
-    <value>1</value>
-    <description>Default block replication.
-    The actual number of replications can be specified when the file is created.
-    The default is used if replication is not specified in create time.
-    </description>
+<name>dfs.replication</name>
+<value>1</value>
+<description>Default block replication.
+The actual number of replications can be specified when the file is created.
+The default is used if replication is not specified in create time.
+</description>
 </property>
+</configuration>
 ```
 
 In addition, add the following to `$HADOOP_PREFIX/etc/hadoop/core-site.xml` to let the Hadoop modules know where the `HDFS NameNode` is located.
 ```xml
 <configuration>
-    <property>
-        <name>hadoop.tmp.dir</name>
-        <value>/usr/local/hadoop/tmp</value>
-        <description>Abase for other temporary directories.</description>
-    </property>
-    <property>
-        <name>fs.defaultFS</name>
-        <value>hdfs://localhost:9000</value>
-    </property>
+<property>
+<name>fs.defaultFS</name>
+<value>hdfs://localhost/</value>
+<description>NameNode URI</description>
+</property>
 </configuration>
+```
+
+`Note`:
+If you configured `core-site.xml`, then the bellow example testing will fail.
+```bash
+# This test will fail in to connection refuse
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar grep ~/input ~/grep_example 'principal[.]*'
 ```
 
 ### YARN Configuration
