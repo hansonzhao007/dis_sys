@@ -431,35 +431,80 @@ failed.
 
 
 # Hadoop Web Interfaces
-Hadoop comes with several web interfaces which are by default (see conf/hadoop-default.xml) available at these locations:
+## Web UIs for the Common User
+---
+The default Hadoop ports are as follows:
 
-- http://localhost:50070/ – web UI of the NameNode daemon
-- http://localhost:50030/ – web UI of the JobTracker daemon
-- http://localhost:50060/ – web UI of the TaskTracker daemon
+Daemon            | Default Port  | Configuration Parameter
+---------------   | ------------  | -----------------------
+------HDFS-------||
+Namenode          |50070          |dfs.http.address
+Datanodes         |50075          |dfs.datanode.http.address
+Secondarynamenode |50090          |dfs.secondary.http.address
+Backup/Checkpoint node? |50105    |dfs.backup.http.address
+----MapReduce----||
+Jobracker         |50030          |mapred.job.tracker.http.address
+Tasktrackers      |50060          |mapred.task.tracker.http.address
 
-These web interfaces provide concise information about what’s happening in your Hadoop cluster. You might want to give them a try.
+Hadoop daemons expose some information over HTTP. All Hadoop daemons expose the following:
 
-## NameNode Web Interface (HDFS layer)
+- `/logs`:
+Exposes, for downloading, log files in the Java system property **hadoop.log.dir**.
+- `/logLevel`:
+Allows you to dial up or down **log4j** logging levels. This is similar to **hadoop daemonlog** on the command line.
+- `/stacks`:
+Stack traces for all threads. Useful for debugging.
+- `/metrics`:
+Metrics for the server. Use /metrics?format=json to retrieve the data in a structured form. `Available in 0.21`.
 
-The name node web UI shows you a cluster summary including information about total/remaining capacity, live and dead nodes. Additionally, it allows you to browse the HDFS namespace and view the contents of its files in the web browser. It also gives access to the local machine’s Hadoop log files.
+Individual daemons expose extra daemon-specific endpoints as well. Note that these are not necessarily part of Hadoop’s public API, so they tend to change over time.
 
-By default, it’s available at http://localhost:50070/.
+The `Namenode` exposes:
 
-## JobTracker Web Interface (MapReduce layer)
+- `/`:
+Shows information about the namenode as well as the HDFS. There’s a link from here to browse the filesystem, as well.
+- `/dfsnodelist.jsp?whatNodes=(DEAD|LIVE)`:
+Shows lists of nodes that are disconnected from (DEAD) or connected to (LIVE) the namenode.
+- `/fsck`:
+Runs the “fsck” command. Not recommended on a busy cluster.
+- `/listPaths`:
+Returns an XML-formatted directory listing. This is useful if you wish (for example) to poll HDFS to see if a file exists. The URL can include a path (e.g., /listPaths/user/philip) and can take optional GET arguments: /listPaths?recursive=yes will return all files on the file system; /listPaths/user/philip?filter=s.* will return all files in the home directory that start with s; and /listPaths/user/philip?exclude=.txt will return all files except text files in the home directory. Beware that filter and exclude operate on the directory listed in the URL, and they ignore the recursive flag.
+- `/data` and `/fileChecksum`
+These forward your HTTP request to an appropriate datanode, which in turn returns the data or the checksum.
 
-The JobTracker web UI provides information about general job statistics of the Hadoop cluster, running/completed/failed jobs and a job history log file. It also gives access to the ‘‘local machine’s’’ Hadoop log files (the machine on which the web UI is running on).
+`Datanodes` expose the following:
 
-By default, it’s available at http://localhost:50030/.
+- `/browseBlock.jsp`, `/browseDirectory.jsp, tail.jsp`, `/streamFile`, `/getFileChecksum`
+These are the endpoints that the namenode redirects to when you are browsing filesystem content. You probably wouldn’t use these directly, but this is what’s going on underneath.
+- `/blockScannerReport`
+Every datanode verifies its blocks at configurable intervals. This endpoint provides a listing of that check.
 
-## TaskTracker Web Interface (MapReduce layer)
+The `secondarynamenode` exposes a simple status page with information including which namenode it’s talking to, when the last checkpoint was, how big it was, and which directories it’s using.
 
-The task tracker web UI shows you running and non-running tasks. It also gives access to the ‘‘local machine’s’’ Hadoop log files.
+The `jobtracker`‘s UI is commonly used to look at running jobs, and, especially, to find the causes of failed jobs. The UI is best browsed starting at `/jobtracker.jsp`. There are over a dozen related pages providing details on tasks, history, scheduling queues, jobs, etc.
 
-By default, it’s available at http://localhost:50060/.
+`Tasktrackers` have a simple page (`/tasktracker.jsp`), which shows running tasks. They also expose `/taskLog?taskid= `to query logs for a specific task. They use `/mapOutput` to serve the output of map tasks to reducers, but this is an internal API.
 
+## Under the Covers for the Developer and the System Administrator
+---
+Internally, Hadoop mostly uses Hadoop IPC to communicate amongst servers. (Part of the goal of the Apache Avro project is to replace Hadoop IPC with something that is easier to evolve and more language-agnostic; HADOOP-6170 is the relevant ticket.) Hadoop also uses HTTP (for the secondarynamenode communicating with the namenode and for the tasktrackers serving map outputs to the reducers) and a raw network socket protocol (for datanodes copying around data).
 
+The following table presents the ports and protocols (including the relevant Java class) that Hadoop uses. This table does not include the HTTP ports mentioned above.
+
+Daemon|Default Port|Configuration Parameter|Protocol|Used for
+------|------------|-----------------------|--------|--------
+Namenode|8020|fs.default.name|IPC: ClientProtocol|Filesystem metadata operations
+Datanode|50010|dfs.datanode.address|Custom Hadoop Xceiver: DataNode and DFSClient|DFS data transfer
+Datanode|50020|dfs.datanode.ipc.address|IPC: InterDatanodeProtocol, ClientDatanodeProtocol
+ClientProtocol|Block metadata operations and recovery                               
+Backupnode|50100|dfs.backup.address|Same as namenode|HDFS Metadata Operations
+> This is the port part of hdfs://host:8020/.
+  Default is not well-defined. Common values are 8021, 9001, or 8012. See [MAPREDUCE-566](http://issues.apache.org/jira/browse/MAPREDUCE-566).
+  Binds to an unused local port.
+  
 # Reference
 - [Running Hadoop on Ubuntu Linux (Single-Node Cluster)](http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/#installation)
 - [Hadoop YARN Installation: The definitive guide](https://www.alexjf.net/blog/distributed-systems/hadoop-yarn-installation-definitive-guide/)
 - [How to Install Hadoop in Stand-Alone Mode on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-hadoop-in-stand-alone-mode-on-ubuntu-16-04)
 - [Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04](http://www.powerxing.com/install-hadoop/)
+- [Hadoop Default Ports Quick Reference](http://blog.cloudera.com/blog/2009/08/hadoop-default-ports-quick-reference/)

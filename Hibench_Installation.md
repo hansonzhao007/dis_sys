@@ -1,4 +1,20 @@
 # Tools installation
+## install scala
+go to `~/Program` directory
+```bash
+wget https://scala-lang.org/files/archive/scala-2.10.4.tgz
+tar -xzvf scala-2.10.4.tgz
+mv scala-2.10.4.tgz scala
+
+# configure .bashrc
+export SCALA_HOME=$WORK_SPACE/scala-2.10.4
+export PATH=$PATH:$SCALA_HOME/bin
+
+# Test
+source .bashrc
+scala -version
+```
+
 ## Install Spark
 ```bash
 cd /usr/local
