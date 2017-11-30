@@ -495,8 +495,7 @@ Daemon|Default Port|Configuration Parameter|Protocol|Used for
 ------|------------|-----------------------|--------|--------
 Namenode|8020|fs.default.name|IPC: ClientProtocol|Filesystem metadata operations
 Datanode|50010|dfs.datanode.address|Custom Hadoop Xceiver: DataNode and DFSClient|DFS data transfer
-Datanode|50020|dfs.datanode.ipc.address|IPC: InterDatanodeProtocol, ClientDatanodeProtocol
-ClientProtocol|Block metadata operations and recovery                               
+Datanode|50020|dfs.datanode.ipc.address|IPC: InterDatanodeProtocol, ClientDatanodeProtocolClientProtocol|Block metadata operations and recovery                               
 Backupnode|50100|dfs.backup.address|Same as namenode|HDFS Metadata Operations
 > This is the port part of hdfs://host:8020/.
   Default is not well-defined. Common values are 8021, 9001, or 8012. See [MAPREDUCE-566](http://issues.apache.org/jira/browse/MAPREDUCE-566).
