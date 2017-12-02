@@ -298,8 +298,13 @@ In addition, add the following to `$HADOOP_PREFIX/etc/hadoop/core-site.xml` to l
 ```xml
 <configuration>
 <property>
+<name>hadoop.tmp.dir</name>
+<value>file:///home/osboxes/Program/hadoop/tmp</value>
+<description>Abase for other temporary directories.</description>
+</property>
+<property>
 <name>fs.defaultFS</name>
-<value>hdfs://localhost/</value>
+<value>hdfs://localhost:9000/</value>
 <description>NameNode URI</description>
 </property>
 </configuration>
