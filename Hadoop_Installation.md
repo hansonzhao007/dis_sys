@@ -243,7 +243,7 @@ Output
 ```
 But if you run this test again, it will give some error. Don't worry, just delete the `grep_example` folder then everything will work fine.
 
-## Hadoop configuration
+## Hadoop Pseudo-distributed Mode
 ### HDFS Configuration
 In this section, we will configure the directory where Hadoop will store its data files, the network ports it listens to, etc. Our setup will use Hadoop’s Distributed File System, `HDFS`, even though our little “cluster” only contains our single local machine.
 
@@ -317,10 +317,22 @@ If you configured `core-site.xml`, then the bellow example testing will fail.
 hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar grep ~/input ~/grep_example 'principal[.]*'
 ```
 
-### YARN Configuration
+### YARN on a Single Node
 YARN is the component responsible for allocating containers to run tasks, coordinating the execution of said tasks, restart them in case of failure, among other housekeeping. Just like HDFS, it also has 2 main components: a ResourceManager which keeps track of the cluster resources and NodeManagers in each of the nodes which communicates with the ResourceManager and sets up containers for execution of tasks.
 
-To configure YARN, the relevant file is `$HADOOP_PREFIX/etc/hadoop/yarn-site.xml`. The file should currently be empty which means it's using the default configurations you can find [here](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-common/yarn-default.xml). For a single-node installation of YARN you'll want to add the following to that file:
+You can run a MapReduce job on YARN in a pseudo-distributed mode by setting a few parameters and running ResourceManager daemon and NodeManager daemon in addition.
+
+Configure parameters as follows: etc/hadoop/`mapred-site.xml:`
+```bash
+<configuration>
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+</property>
+</configuration>
+```
+
+ `$HADOOP_PREFIX/etc/hadoop/yarn-site.xml`. The file should currently be empty which means it's using the default configurations you can find [here](http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-common/yarn-default.xml). For a single-node installation of YARN you'll want to add the following to that file:
 ```bash
 <configuration>
     <property>
@@ -353,9 +365,19 @@ To configure YARN, the relevant file is `$HADOOP_PREFIX/etc/hadoop/yarn-site.xml
         <value>4</value>
         <description>Number of CPU cores that can be allocated for containers.</description>
     </property>
+    
+    <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+    </property>
+    
+    <property>
+    <name>yarn.nodemanager.vmem-pmem-ratio</name>
+    <value>4</value>
+    </property>
+    
 </configuration>
 ```
-
 
 # Starting
 Now that we've finished configuring everything, it's time to setup the folders and start the daemons:
@@ -367,12 +389,19 @@ $HADOOP_PREFIX/bin/hdfs namenode -format
 $HADOOP_PREFIX/sbin/hadoop-daemon.sh start namenode
 # Start the datanode daemon
 $HADOOP_PREFIX/sbin/hadoop-daemon.sh start datanode
-
 ## Start YARN daemons
 # Start the resourcemanager daemon
 $HADOOP_PREFIX/sbin/yarn-daemon.sh start resourcemanager
 # Start the nodemanager daemon
 $HADOOP_PREFIX/sbin/yarn-daemon.sh start nodemanager
+```
+or
+```
+# Format the namenode directory (DO THIS ONLY ONCE, THE FIRST TIME)
+$HADOOP_PREFIX/bin/hdfs namenode -format
+# Start NameNode daemon and DataNode daemon, The hadoop daemon log output is written to the $HADOOP_LOG_DIR directory (defaults to $HADOOP_HOME/logs).
+$HADOOP_PREFIX/sbin/start-dfs.sh
+$HADOOP_PREFIX/sbin/start-yarn.sh
 ```
 Hopefully, everything should be running. Use the command `jps` to see if all daemons are launched. If one is missing, check `$HADOOP_PREFIX/logs/<daemon with problems>.log` for any errors.
 
@@ -385,6 +414,13 @@ hduser@hanson:$HADOOP_HOME/etc/hadoop$ jps
 13126 Jps
 7703 NameNode
 ```
+
+Make the HDFS directories required to execute MapReduce jobs:
+```bash
+$ bin/hdfs dfs -mkdir /user
+$ bin/hdfs dfs -mkdir /user/<username>
+```
+
 # Testing
 To test if everything is working ok, lets run one of the example applications shipped with Hadoop called DistributedShell. This application spawns a specified number of containers and runs a shell command in each of them. Lets run DistributedShell with the 'date' command which outputs the current time:
 ```bash
@@ -512,3 +548,4 @@ Backupnode|50100|dfs.backup.address|Same as namenode|HDFS Metadata Operations
 - [How to Install Hadoop in Stand-Alone Mode on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-hadoop-in-stand-alone-mode-on-ubuntu-16-04)
 - [Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04](http://www.powerxing.com/install-hadoop/)
 - [Hadoop Default Ports Quick Reference](http://blog.cloudera.com/blog/2009/08/hadoop-default-ports-quick-reference/)
+- [](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html)

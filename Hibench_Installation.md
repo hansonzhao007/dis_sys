@@ -190,7 +190,7 @@ Property|Meaning
 hibench.hadoop.home |The Hadoop installation location
 hibench.hadoop.executable   |The path of hadoop executable. For Apache Hadoop, it is /YOUR/HADOOP/HOME/bin/hadoop
 hibench.hadoop.configure.dir    |Hadoop configuration directory. For Apache Hadoop, it is /YOUR/HADOOP/HOME/etc/hadoop
-hibench.hdfs.master |The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/username
+hibench.hdfs.master |The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/hanson
 hibench.hadoop.release  |Hadoop release provider. Supported value: apache, cdh5, hdp
 
 - `Note`: For CDH and HDP users, please update `hibench.hadoop.executable`, `hibench.hadoop.configure.dir` and `hibench.hadoop.release` properly. The default value is for Apache release.
@@ -207,7 +207,7 @@ hibench.hadoop.configure.dir  ${hibench.hadoop.home}/etc/hadoop
 
 # The root HDFS path to store HiBench data
 # Port should be same as the configuration in ~/Program/hadoop/etc/hadoop/core-site.xml
-# datafolder should be where your store your data. Here I set as `/tmp`
+# datafolder should be where your store your data. Here I set as `/user/hanson`
 hibench.hdfs.master       hdfs://localhost:port/datafolder
 
 # Hadoop release provider. Supported value: apache, cdh5, hdp
@@ -250,6 +250,12 @@ and edit:
 hibench.masters.hostnames localhost:9000 # This should be the same as the value of `fs.defaultFS` in your `Program/hadoop/etc/hadoop/core-site.xml`
 hibench.slaves.hostnames localhost:9000
 ```
+prepare.sh
+![prepare](./prepare.gjf)
+
+run.sh
+![run](./run.gif)
+
 If everything works fine, then you will find a `report` folder in your `~Program/Hibench/` directory.
 ```bash
 ~/Program/Hibench
@@ -262,6 +268,22 @@ If everything works fine, then you will find a `report` folder in your `~Program
 ----| prepare
 ...
 ```
+
+Also there will be a report on DFS:
+```bash
+osboxes@hanson:~/Program/HiBench$ fs -ls /user/hanson/HiBench/Wordcount/Output
+Found 9 items
+-rw-r--r--   1 osboxes supergroup          0 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/_SUCCESS
+-rw-r--r--   1 osboxes supergroup       2696 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00000
+-rw-r--r--   1 osboxes supergroup       2577 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00001
+-rw-r--r--   1 osboxes supergroup       2629 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00002
+-rw-r--r--   1 osboxes supergroup       2952 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00003
+-rw-r--r--   1 osboxes supergroup       2858 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00004
+-rw-r--r--   1 osboxes supergroup       2700 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00005
+-rw-r--r--   1 osboxes supergroup       2719 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00006
+-rw-r--r--   1 osboxes supergroup       3025 2017-12-03 01:15 /user/hanson/HiBench/Wordcount/Output/part-r-00007
+```
+
 You can see your test results in `report/wordcount/hadoop/bench.log`
 ```bash
 osboxes@hanson:~/Program/HiBench/report/wordcount/prepare$ cat bench.log
