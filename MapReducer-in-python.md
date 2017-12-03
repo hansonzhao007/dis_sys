@@ -1,4 +1,6 @@
 # What we want to do
+Before we start, we should first [install hadoop](./Hadoop_Installation.md).
+
 We will write a simple MapReduce program (see also the MapReduce article on Wikipedia) for Hadoop in Python but without using Jython to translate our code to Java jar files.
 
 Our program will mimick the WordCount, i.e. it reads text files and counts how often words occur. The input is text files and the output is text files, each line of which contains a word and the count of how often it occured, separated by a tab.
