@@ -10,7 +10,7 @@ Save the following code in the file `mapper.py`. It will read data from STDIN, s
 
 Make sure the file has execution permission (`chmod +x mapper.py` should do the trick) or you will run into problems.
 ```bash
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import sys
 
@@ -74,7 +74,7 @@ Save the following code in the file `reducer.py`. It will read the results of ma
 
 Make sure the file has execution permission (chmod +x reducer.py should do the trick) or you will run into problems.
 ```bash
-#!/usr/bin/env python
+#!/usr/bin/python
 
 from operator import itemgetter
 import sys
@@ -174,7 +174,7 @@ hadoop \
 jar /home/osboxes/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.jar \
 -mapper "python $PWD/mapper.py" \
 -reducer "python $PWD/reducer.py" \
--input "/user/hanson/text.txt" \
+-input "/user/hanson/outline-of-science.txt" \
 -output "/user/hanson-output"
 ```
 
@@ -203,6 +203,8 @@ So add this to `yarn-site.xml`.
 ```
 
 ![python-mapreduce](./python-mapredue.gif)
+
+This is the output [results](./output.txt).
 # Reference
 [Writing an Hadoop MapReduce Program in Python](http://www.michael-noll.com/tutorials/writing-an-hadoop-mapreduce-program-in-python/)
 [Hadoop Wiki - ImportantConcepts](https://wiki.apache.org/hadoop/ImportantConcepts)
