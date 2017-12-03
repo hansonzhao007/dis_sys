@@ -171,11 +171,11 @@ Now that everything is prepared, we can finally run our Python MapReduce job on 
 
 ```bash
 hadoop \
-jar ~/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.jar \
--mapper ./mapper.py \
--reducer .reducer.py \
--input /user/hanson/outline-of-science.txt \
--output /user/hanson-output
+jar /home/osboxes/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.jar \
+-mapper "python $PWD/mapper.py" \
+-reducer "python $PWD/reducer.py" \
+-input "/user/hanson/text.txt" \
+-output "/user/hanson-output"
 ```
 
 
@@ -202,27 +202,7 @@ So add this to `yarn-site.xml`.
 </property>
 ```
 
-then While running any mapping in hive pushdown mode, the container fails with the following error:
-```
-Diagnostics: Exception from container-launch.
-Container id: container_1463191168836_0001_02_000001
-Exit code: 1
-Stack trace: ExitCodeException exitCode=1:
-at org.apache.hadoop.util.Shell.runCommand(Shell.java:576)
-at org.apache.hadoop.util.Shell.run(Shell.java:487)
-at org.apache.hadoop.util.Shell$ShellCommandExecutor.execute(Shell.java:753)
-at org.apache.hadoop.yarn.server.nodemanager.DefaultContainerExecutor.launchContainer(DefaultContainerExecutor.java:212)
-at org.apache.hadoop.yarn.server.nodemanager.containermanager.launcher.ContainerLaunch.call(ContainerLaunch.java:303)
-at org.apache.hadoop.yarn.server.nodemanager.containermanager.launcher.ContainerLaunch.call(ContainerLaunch.java:82)
-at java.util.concurrent.FutureTask.run(FutureTask.java:266)
-at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
-at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-at java.lang.Thread.run(Thread.java:745)
-```
-While checking the individual task log, you could see the following:
-```
-Error: Could not find or load main class org.apache.hadoop.mapreduce.v2.app.MRAppMaster
-```
+![python-mapreduce](./python-mapredue.gif)
 # Reference
 [Writing an Hadoop MapReduce Program in Python](http://www.michael-noll.com/tutorials/writing-an-hadoop-mapreduce-program-in-python/)
 [Hadoop Wiki - ImportantConcepts](https://wiki.apache.org/hadoop/ImportantConcepts)
