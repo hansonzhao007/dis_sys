@@ -251,8 +251,9 @@ hibench.masters.hostnames localhost:9000 # This should be the same as the value 
 hibench.slaves.hostnames localhost:9000
 ```
 prepare.sh
-![prepare](./prepare.gjf)
+![prepare](prepare.gif)
 
+ 
 run.sh
 ![run](./run.gif)
 
