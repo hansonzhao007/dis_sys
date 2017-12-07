@@ -410,6 +410,176 @@ osboxes@slave2:~/Program/hadoop/tmp/dfs$ jps
 Go to http://master:8080 to see your running state.
 ![spark_state](./spark_state.png)
 
+You could now run a spark cluster example:
+```
+spark-submit \
+--class org.apache.spark.examples.SparkPi \
+--master yarn \
+./examples/jars/spark-examples_2.11-2.2.0.jar \
+10
+```
+Output should be like this:
+```bash
+17/12/07 00:24:18 INFO spark.SparkContext: Running Spark version 2.2.0
+17/12/07 00:24:18 INFO spark.SparkContext: Submitted application: Spark Pi
+17/12/07 00:24:18 INFO spark.SecurityManager: Changing view acls to: osboxes
+17/12/07 00:24:18 INFO spark.SecurityManager: Changing modify acls to: osboxes
+17/12/07 00:24:18 INFO spark.SecurityManager: Changing view acls groups to:
+17/12/07 00:24:18 INFO spark.SecurityManager: Changing modify acls groups to:
+17/12/07 00:24:18 INFO spark.SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(osboxes); groups with view permissions: Set(); users  with modify permissions: Set(osboxes); groups with modify permissions: Set()
+17/12/07 00:24:19 INFO util.Utils: Successfully started service 'sparkDriver' on port 37651.
+17/12/07 00:24:19 INFO spark.SparkEnv: Registering MapOutputTracker
+17/12/07 00:24:19 INFO spark.SparkEnv: Registering BlockManagerMaster
+17/12/07 00:24:19 INFO storage.BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+17/12/07 00:24:19 INFO storage.BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+17/12/07 00:24:19 INFO storage.DiskBlockManager: Created local directory at /home/osboxes/Program/spark/blockmgr-467da7e8-4d8f-432c-aa7c-b93161bd6f3a
+17/12/07 00:24:19 INFO memory.MemoryStore: MemoryStore started with capacity 366.3 MB
+17/12/07 00:24:19 INFO spark.SparkEnv: Registering OutputCommitCoordinator
+17/12/07 00:24:19 INFO util.log: Logging initialized @2383ms
+17/12/07 00:24:19 INFO server.Server: jetty-9.3.z-SNAPSHOT
+17/12/07 00:24:19 INFO server.Server: Started @2476ms
+17/12/07 00:24:19 INFO server.AbstractConnector: Started ServerConnector@30c31dd7{HTTP/1.1,[http/1.1]}{0.0.0.0:4040}
+17/12/07 00:24:19 INFO util.Utils: Successfully started service 'SparkUI' on port 4040.
+17/12/07 00:24:19 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@41382722{/jobs,null,AVAILABLE,@Spark}
+17/12/07 00:24:19 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@7db0565c{/jobs/json,null,AVAILABLE,@Spark}
+17/12/07 00:24:19 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@52eacb4b{/jobs/job,null,AVAILABLE,@Spark}
+...
+17/12/07 00:24:19 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@7048f722{/jobs/job/kill,null,AVAILABLE,@Spark}
+17/12/07 00:24:19 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@58a55449{/stages/stage/kill,null,AVAILABLE,@Spark}
+17/12/07 00:24:19 INFO ui.SparkUI: Bound SparkUI to 0.0.0.0, and started at http://10.211.55.3:4040
+17/12/07 00:24:19 INFO spark.SparkContext: Added JAR file:/home/osboxes/Program/spark/./examples/jars/spark-examples_2.11-2.2.0.jar at spark://10.211.55.3:37651/jars/spark-examples_2.11-2.2.0.jar with timestamp 1512627859649
+17/12/07 00:24:20 INFO client.RMProxy: Connecting to ResourceManager at master/10.211.55.3:8050
+17/12/07 00:24:20 INFO yarn.Client: Requesting a new application from cluster with 2 NodeManagers
+17/12/07 00:24:20 INFO yarn.Client: Verifying our application has not requested more than the maximum memory capability of the cluster (2048 MB per container)
+...
+17/12/07 00:24:24 INFO yarn.Client: Submitting application application_1512625220468_0005 to ResourceManager
+17/12/07 00:24:24 INFO impl.YarnClientImpl: Submitted application application_1512625220468_0005
+17/12/07 00:24:24 INFO cluster.SchedulerExtensionServices: Starting Yarn extension services with app application_1512625220468_0005 and attemptId None
+17/12/07 00:24:25 INFO yarn.Client: Application report for application_1512625220468_0005 (state: ACCEPTED)
+17/12/07 00:24:25 INFO yarn.Client:
+client token: N/A
+diagnostics: N/A
+ApplicationMaster host: N/A
+ApplicationMaster RPC port: -1
+queue: default
+start time: 1512627864898
+final status: UNDEFINED
+tracking URL: http://master:8088/proxy/application_1512625220468_0005/
+user: osboxes
+17/12/07 00:24:26 INFO yarn.Client: Application report for application_1512625220468_0005 (state: ACCEPTED)
+17/12/07 00:24:27 INFO yarn.Client: Application report for application_1512625220468_0005 (state: ACCEPTED)
+17/12/07 00:24:28 INFO yarn.Client: Application report for application_1512625220468_0005 (state: ACCEPTED)
+17/12/07 00:24:29 INFO cluster.YarnSchedulerBackend$YarnSchedulerEndpoint: ApplicationMaster registered as NettyRpcEndpointRef(spark-client://YarnAM)
+17/12/07 00:24:29 INFO cluster.YarnClientSchedulerBackend: Add WebUI Filter. org.apache.hadoop.yarn.server.webproxy.amfilter.AmIpFilter, Map(PROXY_HOSTS -> slave1, PROXY_URI_BASES -> http://slave1:8088/proxy/application_1512625220468_0005), /proxy/application_1512625220468_0005
+17/12/07 00:24:29 INFO ui.JettyUtils: Adding filter: org.apache.hadoop.yarn.server.webproxy.amfilter.AmIpFilter
+17/12/07 00:24:29 INFO yarn.Client: Application report for application_1512625220468_0005 (state: RUNNING)
+17/12/07 00:24:29 INFO yarn.Client:
+client token: N/A
+diagnostics: N/A
+ApplicationMaster host: 10.211.55.6
+ApplicationMaster RPC port: 0
+queue: default
+start time: 1512627864898
+final status: UNDEFINED
+tracking URL: http://master:8088/proxy/application_1512625220468_0005/
+user: osboxes
+17/12/07 00:24:29 INFO cluster.YarnClientSchedulerBackend: Application application_1512625220468_0005 has started running.
+17/12/07 00:24:29 INFO util.Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 42469.
+17/12/07 00:24:29 INFO netty.NettyBlockTransferService: Server created on 10.211.55.3:42469
+17/12/07 00:24:29 INFO storage.BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+17/12/07 00:24:29 INFO storage.BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.211.55.3, 42469, None)
+...
+17/12/07 00:24:34 INFO internal.SharedState: Warehouse path is 'file:/home/osboxes/Program/spark/spark-warehouse'.
+17/12/07 00:24:34 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@601d6622{/SQL,null,AVAILABLE,@Spark}
+17/12/07 00:24:34 INFO handler.ContextHandler: Started o.s.j.s.ServletContextHandler@7aded903{/SQL/json,null,AVAILABLE,@Spark}
+...
+17/12/07 00:24:36 INFO scheduler.TaskSetManager: Starting task 8.0 in stage 0.0 (TID 8, slave2, executor 1, partition 8, PROCESS_LOCAL, 4836 bytes)
+17/12/07 00:24:36 INFO scheduler.TaskSetManager: Finished task 7.0 in stage 0.0 (TID 7) in 20 ms on slave2 (executor 1) (7/10)
+17/12/07 00:24:36 INFO scheduler.TaskSetManager: Starting task 9.0 in stage 0.0 (TID 9, slave1, executor 2, partition 9, PROCESS_LOCAL, 4836 bytes)
+17/12/07 00:24:36 INFO scheduler.TaskSetManager: Finished task 6.0 in stage 0.0 (TID 6) in 37 ms on slave1 (executor 2) (8/10)
+17/12/07 00:24:36 INFO scheduler.TaskSetManager: Finished task 8.0 in stage 0.0 (TID 8) in 32 ms on slave2 (executor 1) (9/10)
+17/12/07 00:24:36 INFO scheduler.TaskSetManager: Finished task 9.0 in stage 0.0 (TID 9) in 23 ms on slave1 (executor 2) (10/10)
+17/12/07 00:24:36 INFO cluster.YarnScheduler: Removed TaskSet 0.0, whose tasks have all completed, from pool
+17/12/07 00:24:36 INFO scheduler.DAGScheduler: ResultStage 0 (reduce at SparkPi.scala:38) finished in 0.798 s
+17/12/07 00:24:36 INFO scheduler.DAGScheduler: Job 0 finished: reduce at SparkPi.scala:38, took 1.187683 s
+Pi is roughly 3.140779140779141
+17/12/07 00:24:36 INFO server.AbstractConnector: Stopped Spark@30c31dd7{HTTP/1.1,[http/1.1]}{0.0.0.0:4040}
+17/12/07 00:24:36 INFO ui.SparkUI: Stopped Spark web UI at http://10.211.55.3:4040
+17/12/07 00:24:36 INFO cluster.YarnClientSchedulerBackend: Interrupting monitor thread
+17/12/07 00:24:36 INFO cluster.YarnClientSchedulerBackend: Shutting down all executors
+17/12/07 00:24:36 INFO cluster.YarnSchedulerBackend$YarnDriverEndpoint: Asking each executor to shut down
+17/12/07 00:24:36 INFO cluster.SchedulerExtensionServices: Stopping SchedulerExtensionServices
+(serviceOption=None,
+services=List(),
+started=false)
+17/12/07 00:24:36 INFO cluster.YarnClientSchedulerBackend: Stopped
+17/12/07 00:24:36 INFO spark.MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+17/12/07 00:24:36 INFO memory.MemoryStore: MemoryStore cleared
+17/12/07 00:24:36 INFO storage.BlockManager: BlockManager stopped
+17/12/07 00:24:36 INFO storage.BlockManagerMaster: BlockManagerMaster stopped
+17/12/07 00:24:36 INFO scheduler.OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+17/12/07 00:24:36 INFO spark.SparkContext: Successfully stopped SparkContext
+17/12/07 00:24:36 INFO util.ShutdownHookManager: Shutdown hook called
+17/12/07 00:24:36 INFO util.ShutdownHookManager: Deleting directory /home/osboxes/Program/spark/spark-930e6694-6e50-468f-aad4-32a470aaa22d
+```
+
+Then you can run spark HiBench.
+
+## Run Spark Hibench
+Go to `~/Program/HiBench/bin/workloads/micro/wordcount` directory.
+```bash
+./prepare/prepare.sh
+./spark/run.sh
+```
+Here you may encounter an `Error`:
+```bash
+ERROR: Spark job com.intel.hibench.sparkbench.micro.ScalaWordCount failed to run successfully.
+Hint: You can goto /home/osboxes/Program/HiBench/report/wordcount/spark/conf/../bench.log to check for detailed log.
+Opening log tail for you:
+
+Error: Master must either be yarn or start with spark, mesos, local
+```
+
+This is because default testign command miss a configuration:
+![spark_hibench_error](./spark_hibench_error.png)
+
+you could manully run this command:
+
+/home/osboxes/Program/spark/bin/spark-submit  --properties-file /home/osboxes/Program/HiBench/report/wordcount/spark/conf/sparkbench/spark.conf --class com.intel.hibench.sparkbench.micro.ScalaWordCount --master `yarn`  /home/osboxes/Program/HiBench/sparkbench/assembly/target/sparkbench-assembly-7.0-dist.jar hdfs://master:9000/user/hanson/HiBench/Wordcount/Input hdfs://master:9000/user/hanson/HiBench/Wordcount/Output
+
+Output should be like this:
+```bash
+17/12/07 00:29:16 INFO spark.SparkContext: Running Spark version 2.2.0
+17/12/07 00:29:17 INFO spark.SparkContext: Submitted application: ScalaWordCount
+17/12/07 00:29:17 INFO spark.SecurityManager: Changing view acls to: osboxes
+17/12/07 00:29:17 INFO spark.SecurityManager: Changing modify acls to: osboxes
+17/12/07 00:29:17 INFO spark.SecurityManager: Changing view acls groups to:
+17/12/07 00:29:17 INFO spark.SecurityManager: Changing modify acls groups to:
+17/12/07 00:29:17 INFO spark.SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(osboxes); groups with view permissions:
+...
+17/12/07 00:29:23 INFO impl.YarnClientImpl: Submitted application application_1512625220468_0008
+17/12/07 00:29:23 INFO cluster.SchedulerExtensionServices: Starting Yarn extension services with app application_1512625220468_0008 and attemptId None
+17/12/07 00:29:24 INFO yarn.Client: Application report for application_1512625220468_0008 (state: ACCEPTED)
+17/12/07 00:29:24 INFO yarn.Client:
+client token: N/A
+diagnostics: N/A
+ApplicationMaster host: N/A
+ApplicationMaster RPC port: -1
+queue: default
+start time: 1512628163740
+final status: UNDEFINED
+tracking URL: http://master:8088/proxy/application_1512625220468_0008/
+user: osboxes
+17/12/07 00:29:25 INFO yarn.Client: Application report for application_1512625220468_0008 (state: ACCEPTED)
+17/12/07 00:29:26 INFO yarn.Client: Application report for application_1512625220468_0008 (state: ACCEPTED)
+17/12/07 00:29:27 INFO cluster.YarnSchedulerBackend$YarnSchedulerEndpoint: ApplicationMaster registered as NettyRpcEndpointRef(spark-client://YarnAM)
+...
+17/12/07 00:29:32 INFO scheduler.OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+17/12/07 00:29:32 INFO spark.SparkContext: Successfully stopped SparkContext
+17/12/07 00:29:32 INFO util.ShutdownHookManager: Shutdown hook called
+17/12/07 00:29:32 INFO util.ShutdownHookManager: Deleting directory /home/osboxes/Program/spark/spark-f3d895cb-e2a6-4fac-a953-8af90c402356
+
+```
 # Reference
 
 [Spark On YARN 集群安装部署](http://wuchong.me/blog/2015/04/04/spark-on-yarn-cluster-deploy/)
