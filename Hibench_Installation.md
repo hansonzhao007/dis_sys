@@ -214,20 +214,21 @@ hibench.hadoop.configure.dir  ${hibench.hadoop.home}/etc/hadoop
 # The root HDFS path to store HiBench data
 # Port should be same as the configuration in ~/Program/hadoop/etc/hadoop/core-site.xml
 # datafolder should be where your store your data. Here I set as `/user/hanson`
-hibench.hdfs.master       hdfs://localhost:port/datafolder
+hibench.hdfs.master       hdfs://master_hostname:port/datafolder
 
 # Hadoop release provider. Supported value: apache, cdh5, hdp
 hibench.hadoop.release    apache
 ```
 
-## Run Hibench
-first you should start hadoop. Go to `~/Program/hadoop/sbin`, run following commands:
+## Run Hadoop Hibench
+first you should start hadoop. Go to master machine's  `~/Program/hadoop/sbin`, run following commands:
 ```bash
 ./start-dfs.sh
 ./start-yarn.sh
 ```
 make sure hadoop run normally.
 ```bash
+#### standalone mode
 osboxes@hanson:~$ jps
 3184 DataNode
 3669 ResourceManager
@@ -235,6 +236,19 @@ osboxes@hanson:~$ jps
 11896 Jps
 3434 SecondaryNameNode
 4013 NodeManager
+
+#### multinode
+# master side
+osboxes@hanson:~$ jps
+3669 ResourceManager
+2982 NameNode
+11896 Jps
+3434 SecondaryNameNode
+# slave side
+osboxes@slave2:~/Program/hadoop/tmp/dfs$ jps
+6012 Jps
+2702 DataNode
+2927 NodeManager
 ```
 
 Run:
@@ -356,6 +370,46 @@ Bytes Written=4914
 Job ended: Fri Dec 01 21:31:37 CST 2017
 The job took 1 seconds.
 ```
+
+## Run Spark HiBench
+Go to master machine's `~/Program/Spark/conf/` folder, edit file `slaves`:
+```bash
+slave1
+slave2
+```
+Then use command:
+```
+scp -r slaves osboxes@slave2:/home/osboxes/Program/spark/conf/
+```
+to send configure file to all slaves
+
+Start Spark:
+```
+~/Program/Spark/sbin/start-all.sh
+```
+
+Then in the master machine, we should have a `Master`:
+```
+osboxes@master:~/Program/spark/sbin$ jps
+2818 NameNode
+8729 Master
+8826 Jps
+3099 SecondaryNameNode
+3327 ResourceManager
+```
+
+In the slave machine, we should have a `Worker`:
+```bash
+osboxes@slave2:~/Program/hadoop/tmp/dfs$ jps
+6981 Worker
+7429 Jps
+2702 DataNode
+2927 NodeManager
+```
+
+Go to http://master:8080 to see your running state.
+![spark_state](./spark_state.png)
+
 # Reference
 
 [Spark On YARN 集群安装部署](http://wuchong.me/blog/2015/04/04/spark-on-yarn-cluster-deploy/)
