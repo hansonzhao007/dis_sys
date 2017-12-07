@@ -542,10 +542,277 @@ Backupnode|50100|dfs.backup.address|Same as namenode|HDFS Metadata Operations
   Default is not well-defined. Common values are 8021, 9001, or 8012. See [MAPREDUCE-566](http://issues.apache.org/jira/browse/MAPREDUCE-566).
   Binds to an unused local port.
   
+
+# Multinode configuration
+## Node configure
+First get every machine's ip address. Assuming we have 3 machine, 1 master and 2 slaves.
+```
+master: 10.211.55.3
+slave1: 10.211.55.6
+slave2: 10.211.55.7
+```
+
+Then go to every machine's `/etc/hostname` file, change them:
+```
+sudo vim /etc/hostname
+# change hostname to master, slave1, slave2
+```
+
+Then go to every machine's `/etc/hosts` file, add the same content:
+```
+10.211.55.3 master
+10.211.55.6 slave1
+10.211.55.7 slave2
+```
+
+Then reboot 3 machine and conform every machine's hostname:
+```bash
+osboxes@master:~$ hostname
+master
+osboxes@master:~$ ping slave1
+PING slave1 (10.211.55.6) 56(84) bytes of data.
+64 bytes from slave1 (10.211.55.6): icmp_seq=1 ttl=64 time=0.466 ms
+64 bytes from slave1 (10.211.55.6): icmp_seq=2 ttl=64 time=0.417 ms
+64 bytes from slave1 (10.211.55.6): icmp_seq=3 ttl=64 time=0.402 ms
+
+osboxes@master:~$ ping slave2
+PING slave2 (10.211.55.7) 56(84) bytes of data.
+64 bytes from slave2 (10.211.55.7): icmp_seq=1 ttl=64 time=0.491 ms
+64 bytes from slave2 (10.211.55.7): icmp_seq=2 ttl=64 time=0.336 ms
+64 bytes from slave2 (10.211.55.7): icmp_seq=3 ttl=64 time=0.392 ms
+```
+
+Then in every machine, use `ssh` command to link every other machine: ( This is used to enable ssh without password)
+```bash
+osboxes@master:~$ ssh slave1
+The authenticity of host 'slave1 (10.211.55.6)' can't be established.
+ECDSA key fingerprint is SHA256:emnk3O6O2N7CK8chUMIThK3CGFUwFOS44kzsa0phArE.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'slave1,10.211.55.6' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 17.10 (GNU/Linux 4.13.0-17-generic x86_64)
+
+* Documentation:  https://help.ubuntu.com
+* Management:     https://landscape.canonical.com
+* Support:        https://ubuntu.com/advantage
+
+
+21 packages can be updated.
+0 updates are security updates.
+
+Last login: Wed Nov 29 17:08:56 2017 from 127.0.0.1
+osboxes@slave1:~$ exit
+logout
+Connection to slave1 closed.
+osboxes@master:~$ ssh slave2
+The authenticity of host 'slave2 (10.211.55.7)' can't be established.
+ECDSA key fingerprint is SHA256:emnk3O6O2N7CK8chUMIThK3CGFUwFOS44kzsa0phArE.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'slave2,10.211.55.7' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 17.10 (GNU/Linux 4.13.0-17-generic x86_64)
+
+* Documentation:  https://help.ubuntu.com
+* Management:     https://landscape.canonical.com
+* Support:        https://ubuntu.com/advantage
+
+
+21 packages can be updated.
+0 updates are security updates.
+
+Last login: Wed Nov 29 17:08:56 2017 from 127.0.0.1
+osboxes@slave2:~$ exit
+logout
+Connection to slave2 closed.
+osboxes@master:~$ ssh master
+The authenticity of host 'master (10.211.55.3)' can't be established.
+ECDSA key fingerprint is SHA256:emnk3O6O2N7CK8chUMIThK3CGFUwFOS44kzsa0phArE.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'master,10.211.55.3' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 17.10 (GNU/Linux 4.13.0-17-generic x86_64)
+
+* Documentation:  https://help.ubuntu.com
+* Management:     https://landscape.canonical.com
+* Support:        https://ubuntu.com/advantage
+
+
+21 packages can be updated.
+0 updates are security updates.
+
+Last login: Wed Nov 29 17:08:56 2017 from 127.0.0.1
+osboxes@master:~$ exit
+logout
+Connection to master closed.
+osboxes@master:~$
+```
+
+## Update core-site.xml in all machine
+Delete this configure:
+```
+<property>
+    <name>hadoop.tmp.dir</name>
+    <value>file:///home/osboxes/Program/hadoop/tmp</value>
+    <description>Abase for other temporary directories.</description>
+</property>
+```
+
+And change all `fs.default` property to:
+```
+<property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://master:9000/</value>
+    <description>NameNode URI</description>
+</property>
+```
+
+## Update hdfs-site.xml in all machine
+in master node, delete `datanode` property and change `dfs.replication` to 2:
+```bash
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:///home/osboxes/Program/hadoop/tmp/dfs/namenode</value>
+<description>Path on the local filesystem where the NameNode stores the namespace and transaction logs persistently.</description>
+</property>
+
+<property>
+<name>dfs.replication</name>
+<value>2</value>
+<description>Default block replication.
+The actual number of replications can be specified when the file is created.
+The default is used if replication is not specified in create time.
+</description>
+</property>
+</configuration>
+```
+
+In the slave node, delete `namenode` property and change `dfs.replication` to 2
+```bash
+<configuration>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:///home/osboxes/Program/hadoop/tmp/dfs/datanode</value>
+<description>Comma separated list of paths on the local filesystem of a DataNode where it should store its blocks.</description>
+</property>
+
+<property>
+<name>dfs.replication</name>
+<value>2</value>
+<description>Default block replication.
+The actual number of replications can be specified when the file is created.
+The default is used if replication is not specified in create time.
+</description>
+</property>
+</configuration>
+```
+
+## Update yarn-site.xml in all machine
+insert the following to all 3 machines.
+```bash
+<property>
+<name>yarn.resourcemanager.resource-tracker.address</name>
+<value>master:8025</value>
+</property>
+
+<property>
+<name>yarn.resourcemanager.scheduler.address</name>
+<value>master:8030</value>
+</property>
+
+<property>
+<name>yarn.resourcemanager.address</name>
+<value>master:8050</value>
+</property>
+```
+
+## Update mapred-site.xml
+```bash
+<property>
+<name>mapreduce.jobhistory.address</name>
+<value>master:10020</value>
+</property>
+```
+
+## Master or Slaves only configuration
+edit `~/Program/hadoop/etc/hadoop/slaves` file (Master only)
+change to this value:
+```bash
+slave1
+slave2
+```
+
+edit `~/Program/hadoop/etc/hadoop/masters` file (Master only)
+change to this value:
+```
+master
+```
+
+Recreate Namenode folder (Master Only):
+```
+mkdir -p ~/Program/hadoop/tmp/dfs/namenode
+chown osboxes:osboxes -R ~/Program/hadoop/tmp/
+chmod 777 ~/Program/hadoop/tmp/dfs/namenode
+```
+
+Recreate Datanode folder (All slave Nodes only):
+```
+mkdir -p ~/Program/hadoop/tmp/dfs/datanode
+chown osboxes:osboxes -R ~/Program/hadoop/tmp/
+chmod 777 ~/Program/hadoop/tmp/dfs/datanode
+```
+
+Format the Namenode （Master only）
+```
+hdfs namenode -format
+```
+
+## Start the DFS & Yarn（Master only）
+```
+osboxes@master:~/Program/hadoop/sbin$ ./start-dfs.sh
+Starting namenodes on [master]
+master: starting namenode, logging to /home/osboxes/Program/hadoop/logs/hadoop-osboxes-namenode-master.out
+slave2: starting datanode, logging to /home/osboxes/Program/hadoop/logs/hadoop-osboxes-datanode-slave2.out
+slave1: starting datanode, logging to /home/osboxes/Program/hadoop/logs/hadoop-osboxes-datanode-slave1.out
+Starting secondary namenodes [0.0.0.0]
+0.0.0.0: starting secondarynamenode, logging to /home/osboxes/Program/hadoop/logs/hadoop-osboxes-secondarynamenode-master.out
+osboxes@master:~/Program/hadoop/sbin$ jps
+7316 Jps
+6904 NameNode
+7180 SecondaryNameNode
+osboxes@master:~/Program/hadoop/sbin$ ./start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /home/osboxes/Program/hadoop/logs/yarn-osboxes-resourcemanager-master.out
+slave2: starting nodemanager, logging to /home/osboxes/Program/hadoop/logs/yarn-osboxes-nodemanager-slave2.out
+slave1: starting nodemanager, logging to /home/osboxes/Program/hadoop/logs/yarn-osboxes-nodemanager-slave1.out
+osboxes@master:~/Program/hadoop/sbin$ jps
+7665 Jps
+7382 ResourceManager
+6904 NameNode
+7180 SecondaryNameNode
+```
+
+If you go to your slave machine, then you will see：
+```bash
+osboxes@slave1:~/Program/hadoop/tmp/dfs$ jps
+2769 NodeManager
+2538 DataNode
+2891 Jps
+
+```
+
+## Review Yarn console
+If all the services started successfully on all nodes, then you should see all of your nodes listed under Yarn nodes. You can hit the following url on your browser and verify that:
+
+http://master:8088/cluster/nodes
+http://master:50070
+
+You can also get the report of your cluster by issuing the below commands:
+```
+hdfs dfsadmin -report
+```
 # Reference
 - [Running Hadoop on Ubuntu Linux (Single-Node Cluster)](http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/#installation)
 - [Hadoop YARN Installation: The definitive guide](https://www.alexjf.net/blog/distributed-systems/hadoop-yarn-installation-definitive-guide/)
 - [How to Install Hadoop in Stand-Alone Mode on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-hadoop-in-stand-alone-mode-on-ubuntu-16-04)
 - [Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04](http://www.powerxing.com/install-hadoop/)
 - [Hadoop Default Ports Quick Reference](http://blog.cloudera.com/blog/2009/08/hadoop-default-ports-quick-reference/)
-- [](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html)
+- [Hadoop: Setting up a Single Node Cluster.](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html)

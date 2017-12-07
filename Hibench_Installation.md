@@ -71,6 +71,12 @@ Type :help for more information.
 scala>
 ```
 
+You can use following command to test spark:
+```bash
+osboxes@hanson:~$ run-example SparkPi 2>&1 | grep "Pi is roughly"
+Pi is roughly 3.1406157030785153
+
+```
 Then go to `spark/sbin/start-all.sh` to start Spark.
 check `jps`
 ```bash
@@ -356,3 +362,4 @@ The job took 1 seconds.
 [build-hibench.md](https://github.com/intel-hadoop/HiBench/blob/master/docs/build-hibench.md)
 [run-hadoopbench.md](https://github.com/intel-hadoop/HiBench/blob/master/docs/run-hadoopbench.md)
 [HiBench学习笔记](http://www.cnblogs.com/PJQOOO/p/6899988.html)
+[spark 运维实践](https://taoistwar.gitbooks.io/spark-operationand-maintenance-management/content/spark_relate_software/hadoop_2x_install.html)
