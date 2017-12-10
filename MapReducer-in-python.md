@@ -11,28 +11,30 @@ The “trick” behind the following Python code is that we will use the [Hadoop
 Save the following code in the file `mapper.py`. It will read data from STDIN, split it into words and output a list of lines mapping words to their (intermediate) counts to STDOUT. The Map script will not compute an (intermediate) sum of a word’s occurrences though. Instead, it will output <word> 1 tuples immediately – even though a specific word might occur multiple times in the input. In our case we let the subsequent Reduce step do the final sum count. Of course, you can change this behavior in your own scripts as you please, but we will keep it like that in this tutorial because of didactic reasons. :-)
 
 Make sure the file has execution permission (`chmod +x mapper.py` should do the trick) or you will run into problems.
-```bash
+
+```python
 #!/usr/bin/python
 
 import sys
 
 # input comes from STDIN (standard input)
 for line in sys.stdin:
-# remove leading and trailing whitespace
-line = line.strip()
-# split the line into words
-words = line.split()
-# increase counters
-for word in words:
-# write the results to STDOUT (standard output);
-# what we output here will be the input for the
-# Reduce step, i.e. the input for reducer.py
-#
-# tab-delimited; the trivial word count is 1
-print '%s\t%s' % (word, 1)
+    # remove leading and trailing whitespace
+    line = line.strip()
+    # split the line into words
+    words = line.split()
+    # increase counters
+    for word in words:
+        # write the results to STDOUT (standard output);
+        # what we output here will be the input for the
+        # Reduce step, i.e. the input for reducer.py
+        #
+        # tab-delimited; the trivial word count is 1
+        print '%s\t%s' % (word, 1)
 ```
 
 Then writet a test bench:
+
 ```bash
 filename="text.txt"
 if [ $# -eq 0 ]; then
@@ -77,7 +79,8 @@ In the above example of word counting, a key-value pair is emitted for every wor
 Between the mapping and reduction steps, a shuffle and sort step on the key-value pairs occurs. If the number of intermediate key-value pairs is extremely large, the MapReduce job can
 have a very time consuming Shuffle step which can be reduced by performing local aggregation.
 Namely, a dictionary of word frequencies per each document can be added so that only distinct word counts per document are emitted:
-```
+
+```python
 #!/usr/bin/python
 
 import sys
@@ -90,7 +93,7 @@ for line in sys.stdin:
     for word in words:
         if word not in word_cnts.keys(): word_cnts[word] = 1
         else: word_cnts[word] += 1
-        
+
 # emit key-value pairs only for distinct words per document
 for w in word_cnts.keys():
     print '%s\t%s' % (w,word_cnts[w])
@@ -100,7 +103,8 @@ for w in word_cnts.keys():
 Save the following code in the file `reducer.py`. It will read the results of mapper.py from STDIN (so the output format of mapper.py and the expected input format of reducer.py must match) and sum the occurrences of each word to a final count, and then output its results to STDOUT.
 
 Make sure the file has execution permission (chmod +x reducer.py should do the trick) or you will run into problems.
-```bash
+
+```python
 #!/usr/bin/python
 
 from operator import itemgetter
@@ -112,34 +116,34 @@ word = None
 
 # input comes from STDIN
 for line in sys.stdin:
-# remove leading and trailing whitespace
-line = line.strip()
+    # remove leading and trailing whitespace
+    line = line.strip()
 
-# parse the input we got from mapper.py
-word, count = line.split('\t', 1)
+    # parse the input we got from mapper.py
+    word, count = line.split('\t', 1)
 
-# convert count (currently a string) to int
-try:
-count = int(count)
-except ValueError:
-# count was not a number, so silently
-# ignore/discard this line
-continue
+    # convert count (currently a string) to int
+    try:
+        count = int(count)
+    except ValueError:
+        # count was not a number, so silently
+        # ignore/discard this line
+        continue
 
-# this IF-switch only works because Hadoop sorts map output
-# by key (here: word) before it is passed to the reducer
-if current_word == word:
-current_count += count
-else:
-if current_word:
-# write result to STDOUT
-print '%s\t%s' % (current_word, current_count)
-current_count = count
-current_word = word
+    # this IF-switch only works because Hadoop sorts map output
+    # by key (here: word) before it is passed to the reducer
+    if current_word == word:
+        current_count += count
+    else:
+        if current_word:
+            # write result to STDOUT
+            print '%s\t%s' % (current_word, current_count)
+        current_count = count
+        current_word = word
 
 # do not forget to output the last word if needed!
 if current_word == word:
-print '%s\t%s' % (current_word, current_count)
+    print '%s\t%s' % (current_word, current_count)
 ```
 
 You can write a test bench to test your code:
@@ -182,7 +186,7 @@ Download each ebook as text files in Plain Text UTF-8 encoding and store the fil
 
 ## Copy local example data to HDFS
 Before we run the actual MapReduce job, we must first copy the files from our local file system to Hadoop’s HDFS.
-```
+```bash
 # create hdfs folder
 hadoop fs -mkdir /user/data
 # copy local file to hdfs
@@ -241,11 +245,11 @@ zoölogical    1
 Æsop    3
 æons    1
 æsthetic    1
-
 ```
 
 If you want to do MapReduce job again, you should first delete output file or rename a new output file
-```
+
+```bash
 hadoop fs -rm -f -r /user/output
 ```
 Here I encounter error:
@@ -390,7 +394,7 @@ osboxes@slave2:~/Code/hadoop/intsum/spark$ spark-submit wordcount.py intsum.txt
 
 ## MapReduce Version
 Mapper.py:
-```python
+```Python
 #!/usr/bin/python
 
 import sys
