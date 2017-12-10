@@ -409,6 +409,7 @@ The output looks like this:
 ```bash
 hduser@hanson:$HADOOP_HOME/etc/hadoop$ jps
 7890 DataNode
+16585 SecondaryNameNode
 12722 ResourceManager
 13013 NodeManager
 13126 Jps

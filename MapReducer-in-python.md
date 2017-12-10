@@ -311,7 +311,7 @@ castings,: 1
 ```
 # intsum example in MapReduce and Spark
 First generate [10000 random](./intsum.txt) number from range [1,100]. （ random numbers are generated [here](https://www.random.org/integers/)）
-We can check wordcount example using this input:
+We can use wordcount example checking this input:
 
 
 ```
@@ -461,10 +461,11 @@ jar /home/osboxes/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.j
 hadoop fs -cat /user/output/*
 ```
 output:
+
 ![mapreduce-intsum](./Intsum-mapreduce.gif)
 
 ## Spark Version
-Source code:
+intsum.py:
 ```python
 from __future__ import print_function
 import sys
@@ -502,14 +503,15 @@ spark-submit --master yarn intsum.py /user/data/intsum*.txt
 ```
 
 output:
+
 ![insum-spark](./Intsum-spark.gif)
 
 # Reference
-[Writing an Hadoop MapReduce Program in Python](http://www.michael-noll.com/tutorials/writing-an-hadoop-mapreduce-program-in-python/)
-[Hadoop Wiki - ImportantConcepts](https://wiki.apache.org/hadoop/ImportantConcepts)
-[Hadoop FileSystemShell](https://hadoop.apache.org/docs/r2.8.0/hadoop-project-dist/hadoop-common/FileSystemShell.html#renameSnapshot)
-[Tune Hadoop Cluster to get Maximum Performance (Part 2)](http://crazyadmins.com/tag/tuning-yarn-to-get-maximum-performance/)
-[Shell$ExitCodeException - Caused by: java.lang.NoClassDefFoundError](http://www.srccodes.com/p/article/46/noclassdeffounderror-org-apache-hadoop-service-compositeservice-shell-exitcodeexception-classnotfoundexception)
-[Running Hadoop on Ubuntu Linux (Single-Node Cluster)](http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/#copy-local-example-data-to-hdfs)
-[Spark Programming Guide](http://spark.apache.org/docs/latest/rdd-programming-guide.html)
-[Map-reduce tutorial Developing a Map-reduce application](https://www.princeton.edu/researchcomputing/computational-hardware/hadoop/mapred-tut/)
+- [Writing an Hadoop MapReduce Program in Python](http://www.michael-noll.com/tutorials/writing-an-hadoop-mapreduce-program-in-python/)
+- [Hadoop Wiki - ImportantConcepts](https://wiki.apache.org/hadoop/ImportantConcepts)
+- [Hadoop FileSystemShell](https://hadoop.apache.org/docs/r2.8.0/hadoop-project-dist/hadoop-common/FileSystemShell.html#renameSnapshot)
+- [Tune Hadoop Cluster to get Maximum Performance (Part 2)](http://crazyadmins.com/tag/tuning-yarn-to-get-maximum-performance/)
+- [Shell$ExitCodeException - Caused by: java.lang.NoClassDefFoundError](http://www.srccodes.com/p/article/46/noclassdeffounderror-org-apache-hadoop-service-compositeservice-shell-exitcodeexception-classnotfoundexception)
+- [Running Hadoop on Ubuntu Linux (Single-Node Cluster)](http://www.michael-noll.com/tutorials/running-hadoop-on-ubuntu-linux-single-node-cluster/#copy-local-example-data-to-hdfs)
+- [Spark Programming Guide](http://spark.apache.org/docs/latest/rdd-programming-guide.html)
+- [Map-reduce tutorial Developing a Map-reduce application](https://www.princeton.edu/researchcomputing/computational-hardware/hadoop/mapred-tut/)

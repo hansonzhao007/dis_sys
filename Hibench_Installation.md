@@ -191,16 +191,6 @@ cp conf/hadoop.conf.template conf/hadoop.conf
 ```
 Set the below properties properly:
 
-Property|Meaning
-----------|---------
-hibench.hadoop.home |The Hadoop installation location
-hibench.hadoop.executable   |The path of hadoop executable. For Apache Hadoop, it is /YOUR/HADOOP/HOME/bin/hadoop
-hibench.hadoop.configure.dir    |Hadoop configuration directory. For Apache Hadoop, it is /YOUR/HADOOP/HOME/etc/hadoop
-hibench.hdfs.master |The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/hanson
-hibench.hadoop.release  |Hadoop release provider. Supported value: apache, cdh5, hdp
-
-- `Note`: For CDH and HDP users, please update `hibench.hadoop.executable`, `hibench.hadoop.configure.dir` and `hibench.hadoop.release` properly. The default value is for Apache release.
-
 ```
 # Hadoop home
 hibench.hadoop.home    ~/Program/hadoop
@@ -213,7 +203,7 @@ hibench.hadoop.configure.dir  ${hibench.hadoop.home}/etc/hadoop
 
 # The root HDFS path to store HiBench data
 # Port should be same as the configuration in ~/Program/hadoop/etc/hadoop/core-site.xml
-# datafolder should be where your store your data. Here I set as `/user/hanson`
+# datafolder should be where your store your data. Here I set as `/user/hanson`, so mine is hdfs://localhost:9000/user/hanson
 hibench.hdfs.master       hdfs://master_hostname:port/datafolder
 
 # Hadoop release provider. Supported value: apache, cdh5, hdp
@@ -244,6 +234,7 @@ osboxes@hanson:~$ jps
 2982 NameNode
 11896 Jps
 3434 SecondaryNameNode
+
 # slave side
 osboxes@slave2:~/Program/hadoop/tmp/dfs$ jps
 6012 Jps
@@ -267,8 +258,8 @@ please set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually
 So you should go to `~Program/Hibench/conf/hibench.conf` file.
 and edit:
 ```
-hibench.masters.hostnames localhost:9000 # This should be the same as the value of `fs.defaultFS` in your `Program/hadoop/etc/hadoop/core-site.xml`
-hibench.slaves.hostnames localhost:9000
+hibench.masters.hostnames localhost:9000 # This should be the same as the value of `fs.defaultFS` in your `core-site.xml`, (multinode: hibench.masters.hostnames master)
+hibench.slaves.hostnames localhost:9000 # (multinode: hibench.slaves.hostnames slave1 slave2)
 ```
 prepare.sh
 
@@ -540,46 +531,35 @@ Opening log tail for you:
 Error: Master must either be yarn or start with spark, mesos, local
 ```
 
-This is because default testign command miss a configuration:
+This is because default testing command miss a configuration:
+
 ![spark_hibench_error](./spark_hibench_error.png)
 
-you could manully run this command:
-
-/home/osboxes/Program/spark/bin/spark-submit  --properties-file /home/osboxes/Program/HiBench/report/wordcount/spark/conf/sparkbench/spark.conf --class com.intel.hibench.sparkbench.micro.ScalaWordCount --master `yarn`  /home/osboxes/Program/HiBench/sparkbench/assembly/target/sparkbench-assembly-7.0-dist.jar hdfs://master:9000/user/hanson/HiBench/Wordcount/Input hdfs://master:9000/user/hanson/HiBench/Wordcount/Output
-
-Output should be like this:
-```bash
-17/12/07 00:29:16 INFO spark.SparkContext: Running Spark version 2.2.0
-17/12/07 00:29:17 INFO spark.SparkContext: Submitted application: ScalaWordCount
-17/12/07 00:29:17 INFO spark.SecurityManager: Changing view acls to: osboxes
-17/12/07 00:29:17 INFO spark.SecurityManager: Changing modify acls to: osboxes
-17/12/07 00:29:17 INFO spark.SecurityManager: Changing view acls groups to:
-17/12/07 00:29:17 INFO spark.SecurityManager: Changing modify acls groups to:
-17/12/07 00:29:17 INFO spark.SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(osboxes); groups with view permissions:
-...
-17/12/07 00:29:23 INFO impl.YarnClientImpl: Submitted application application_1512625220468_0008
-17/12/07 00:29:23 INFO cluster.SchedulerExtensionServices: Starting Yarn extension services with app application_1512625220468_0008 and attemptId None
-17/12/07 00:29:24 INFO yarn.Client: Application report for application_1512625220468_0008 (state: ACCEPTED)
-17/12/07 00:29:24 INFO yarn.Client:
-client token: N/A
-diagnostics: N/A
-ApplicationMaster host: N/A
-ApplicationMaster RPC port: -1
-queue: default
-start time: 1512628163740
-final status: UNDEFINED
-tracking URL: http://master:8088/proxy/application_1512625220468_0008/
-user: osboxes
-17/12/07 00:29:25 INFO yarn.Client: Application report for application_1512625220468_0008 (state: ACCEPTED)
-17/12/07 00:29:26 INFO yarn.Client: Application report for application_1512625220468_0008 (state: ACCEPTED)
-17/12/07 00:29:27 INFO cluster.YarnSchedulerBackend$YarnSchedulerEndpoint: ApplicationMaster registered as NettyRpcEndpointRef(spark-client://YarnAM)
-...
-17/12/07 00:29:32 INFO scheduler.OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
-17/12/07 00:29:32 INFO spark.SparkContext: Successfully stopped SparkContext
-17/12/07 00:29:32 INFO util.ShutdownHookManager: Shutdown hook called
-17/12/07 00:29:32 INFO util.ShutdownHookManager: Deleting directory /home/osboxes/Program/spark/spark-f3d895cb-e2a6-4fac-a953-8af90c402356
-
+You should go to `~/Program/HiBench/conf` folder:
 ```
+cp spark.conf.template spark.conf
+vim spark.conf
+```
+
+Then edit some configuration:
+```bash
+hibench.spark.home     /home/osboxes/Program/spark
+
+hibench.spark.master    yarn # This is where the error happens
+
+# make sure following configuration is consistant with your machine
+# executor number and cores when running on Yarn
+hibench.yarn.executor.num     2
+hibench.yarn.executor.cores   2
+
+# executor and driver memory in standalone & YARN mode
+spark.executor.memory  1g
+spark.driver.memory    1g
+```
+
+Then you run `./spark/run.sh` command again. If any error happens, you should go to `~/Program/HiBench/report/wordcount/spark` to see `bench.log` to find out what is wrong.
+![hibench_spark](./HiBench-spark.gif)
+
 # Reference
 
 [Spark On YARN 集群安装部署](http://wuchong.me/blog/2015/04/04/spark-on-yarn-cluster-deploy/)
