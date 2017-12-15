@@ -201,15 +201,31 @@ Found 1 items
 Now that everything is prepared, we can finally run our Python MapReduce job on the Hadoop cluster. As I said above, we leverage the Hadoop Streaming API for helping us passing data between our Map and Reduce code via `STDIN` and `STDOUT`.
 
 ```bash
-hadoop \
-jar /home/osboxes/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.jar \
+hadoop jar /home/osboxes/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.jar \
+-D mapred.reduce.tasks=2 \
 -mapper mapper.py \
 -reducer reducer.py \
--input /user/data/outline-of-science.txt \
+-input /user/data/intsum*.txt \
 -output /user/output \
 -file mapper.py \
 -file reducer.py
+
 ```
+
+If you want to modify some Hadoop settings on the fly like increasing the number of Reduce tasks, you can use the -D option:
+```
+hadoop jar hadoop-streaming*.jar -D mapred.reduce.tasks=2 ...
+```
+Then you can see 2 output file in `/user/output`
+```
+osboxes@master:~/Code/hadoop/wordcount$ fs -ls /user/output
+Found 3 items
+-rw-r--r--   2 osboxes supergroup          0 2017-12-14 23:00 /user/output/_SUCCESS
+-rw-r--r--   2 osboxes supergroup        353 2017-12-14 23:00 /user/output/part-00000
+-rw-r--r--   2 osboxes supergroup        339 2017-12-14 23:00 /user/output/part-00001
+```
+
+each of them contains half of the whole output.
 
 ```bash
 osboxes@slave2:~$ fs -cat /user/output/*
@@ -447,7 +463,7 @@ print '==== sum is:%s ====' %(tsum)
 
 testbench.sh:
 ```bash
-cat intsum*.txt | python mapper.py | python reducer.py
+cat intsum*.txt | python mapper.py |sort -k1,1 | python reducer.py
 hadoop fs -rm -R /user/output
 hadoop \
 jar /home/osboxes/Program/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.4.jar \
