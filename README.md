@@ -1,16 +1,17 @@
 ﻿# Totally ordered multicasting service
+ 
 This is an n-node distributed system that provides a totally ordered multicasting service and a distributed locking scheme. The distributed system uses logical clock to timestamp messages sent/received between nodes. To start the distributed system, each node synchronize their logical clocks to the same initial value, based on which the ordering of events can be determined among the machines.
+
 The sample code uses Berkeley Algorithm to obtain an initial agreement on the logical clocks. Totally ordered multicasting is  implemented using Lamport’s algorithm.
 
 # Instruction about how to run the program
 To compile the programs, you should enter into "server_side" folder and use `make` command.
 
 To run the program:
-
-1. Start testing
+```bash
 ./main [node_number]
-
-node_number: This is used to set number of process. The maximum number can be set to 10.
+```
+`node_number`: This is used to set number of process. The maximum number can be set to 10.
 
 For example, "./main 5" will create 5 process to simulate totally orderd multicasting
 
